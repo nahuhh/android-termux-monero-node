@@ -260,7 +260,6 @@ then
 	RESP=\$(termux-dialog radio -t "Delete blockchain data?" -v "Yes,No" | jq '.index')
 
 	#0 = Uninstall
-
 	if [ \$RESP = 0 ]
 	then
         echo "Deleting blockchain data"
@@ -319,13 +318,14 @@ echo    "make sure to install Termux:Boot from f-droid, and run it once."
 echo "3. If behind a router and youd like to access your node from other devices, go to:"
 echo "   android settings > wifi > edit saved network > advanced > DHCP"
 echo "   change from automatic to manual, and set the IP to:"
-termux-wifi-connectioninfo
+echo $(termux-wifi-connectioninfo | jq '.ip')
 echo "4. Idealky, you *should* also enable P2P seeding."
 echo "   To do this: go to your router settings (usually 192.168.0.1 in your browser)"
 echo "   Find 'Port Forwarding' and forward public/external port 18080 to internal/private port 18080, setting the internal ip to:"
-termux-wifi-connectioninfo
-echo "Tip: If you want to enable Wallet access from WAN, Also forward 18089 to 18089 as well)"
-echo "to make changes to the config file:"
+echo $(termux-wifi-connectioninfo | jq '.ip')
+echo "4b. To enable Wallet access from WAN:"
+echo "Also forward 18089 to 18089 as well"
+echo "5. To make changes to the config file:"
 echo "nano $NODE_CONFIG/config.txt"
 echo "Cheers ☠"
 )
