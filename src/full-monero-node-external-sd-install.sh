@@ -314,12 +314,12 @@ sleep 1
 echo "A couple things for you to do:"
 echo "1. Add the Termux:Widget to your homescreen"
 echo "2. If youd like the node to run automatically on boot"
-echo    "make sure to install Termux:Boot from f-droid, and run it once."
+echo "   make sure to install Termux:Boot from f-droid, and run it once."
 echo "3. If behind a router and youd like to access your node from other devices, go to:"
 echo "   android settings > wifi > edit saved network > advanced > DHCP"
 echo "   change from automatic to manual, and set the IP to:"
 echo $(termux-wifi-connectioninfo | jq '.ip')
-echo "4. Idealky, you *should* also enable P2P seeding."
+echo "4. Ideally, you *should* also enable P2P seeding."
 echo "   To do this: go to your router settings (usually 192.168.0.1 in your browser)"
 echo "   Find 'Port Forwarding' and forward public/external port 18080 to internal/private port 18080, setting the internal ip to:"
 echo $(termux-wifi-connectioninfo | jq '.ip')
