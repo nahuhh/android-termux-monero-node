@@ -41,12 +41,10 @@ fi
 
 termux-wake-lock -y
 pkg update -y
-pkg upgrade -y
 pkg install nano wget termux-api jq -y
 
-
-# Cleanup
-rm -f $TERMUX_BOOT/before_start_monero_node
+# Pre-Clean  (commented as it seems to not be used)
+# rm -f $TERMUX_BOOT/before_start_monero_node
 
 
 # Create Directories
@@ -57,56 +55,56 @@ mkdir -p $TERMUX_SHORTCUTS
 mkdir -p $TERMUX_SCHEDULED
 mkdir -p $NODE_CONFIG
 
+
 # Download Blocklist
 cd $NODE_CONFIG
-wget https://gui.xmr.pm/files/block.txt
-
+wget -O block.txt https://gui.xmr.pm/files/block.txt
 # Create Monerod Config file
  cat << EOF > config.txt
 # Data directory (blockchain db and indices)
-data-dir=$NODE_DATA
+	data-dir=$NODE_DATA
 
 # Log file
-log-file=/dev/null
-max-log-file-size=0       # Prevent monerod from creating log files
+	log-file=/dev/null
+	max-log-file-size=0       # Prevent monerod from creating log files
 
 #Peer ban list
-ban-list=$NODE_CONFIG/block.txt
+	ban-list=$NODE_CONFIG/block.txt
 
 # block-sync-size=50
 # prune-blockchain=1             #Uncomment to prune
 
-# P2P (seedind) binds
-   p2p-bind-ip=0.0.0.0          # Bind to all interfaces. Default is local 127.0.0.1
-   p2p-bind-port=18080          # Bind to default port
+# P2P (seeding) binds
+	p2p-bind-ip=0.0.0.0          # Bind to all interfaces. Default is local 127.0.0.1
+	p2p-bind-port=18080          # Bind to default port
 
 # Restricted RPC binds (allow restricted access)
 # Uncomment below for access to the node from LAN/WAN. May require port forwarding for WAN access
-   rpc-restricted-bind-ip=0.0.0.0
-   rpc-restricted-bind-port=18089
+	rpc-restricted-bind-ip=0.0.0.0
+	rpc-restricted-bind-port=18089
 
 # Unrestricted RPC binds
-   rpc-bind-ip=127.0.0.1         # Bind to local interface. Default = 127.0.0.1
-   rpc-bind-port=18081           # Default = 18081
-  # confirm-external-bind=1       # Open node (confirm). Required if binding outside of localhost  
-  # restricted-rpc=1              # Prevent unsafe RPC calls.
+	rpc-bind-ip=127.0.0.1         # Bind to local interface. Default = 127.0.0.1
+	rpc-bind-port=18081           # Default = 18081
+	#confirm-external-bind=1       # Open node (confirm). Required if binding outside of localhost  
+	#restricted-rpc=1              # Prevent unsafe RPC calls.
 
-   no-zmq=1
-   no-igd=1                         # Disable UPnP port mapping
-   db-sync-mode=safe                # Slow but reliable db writes
+  	no-zmq=1
+	no-igd=1                         # Disable UPnP port mapping
+	db-sync-mode=safe                # Slow but reliable db writes
 
 # Emergency checkpoints set by MoneroPulse operators will be enforced to workaround potential consensus bugs
 # Check https://monerodocs.org/infrastructure/monero-pulse/ for explanation and trade-offs
-   # enforce-dns-checkpointing=1
-    disable-dns-checkpoints=1
-    enable-dns-blocklist=1
+	#enforce-dns-checkpointing=1
+	disable-dns-checkpoints=1
+	enable-dns-blocklist=1
 
 
 # Connection Limits
-    out-peers=32              # This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
-    in-peers=100            # The default is unlimited; we prefer to put a cap on this
-    limit-rate-up=1048576     # 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
-    limit-rate-down=1048576   # 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
+	out-peers=32              # This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
+	in-peers=100            # The default is unlimited; we prefer to put a cap on this
+	limit-rate-up=1048576     # 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
+	limit-rate-down=1048576   # 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
 EOF
 
 # Create Scripts
@@ -191,8 +189,8 @@ func_xmrnode_install(){
 	mv monero-a* $MONERO_CLI
 
         # Download Blocklist
-        cd $NODE_CONFIG
-        wget https://gui.xmr.pm/files/block.txt
+	cd $NODE_CONFIG
+	wget -O block.txt https://gui.xmr.pm/files/block.txt
 	cd $TERMUX_SHORTCUTS
 	termux-toast -g bottom "Starting XMR Node.."
 	./Start\ XMR\ Node
@@ -301,7 +299,7 @@ cp Update\ XMR\ Node $TERMUX_SCHEDULED
 cd $TERMUX_SHORTCUTS
 ./Stop\ XMR\ Node && echo "Monero Node Stopped"
 cd
-wget -O monero.tar.bzip2 $MONERO_CLI_URL
+wget -c -O monero.tar.bzip2 $MONERO_CLI_URL
 tar jxvf monero.tar.bzip2
 rm monero.tar.bzip2
 rm -rf $MONERO_CLI
@@ -327,5 +325,7 @@ echo "   To do this: go to your router settings (usually 192.168.0.1 in your bro
 echo "   Find 'Port Forwarding' and forward public/external port 18080 to internal/private port 18080, setting the internal ip to:"
 termux-wifi-connectioninfo
 echo "Tip: If you want to enable Wallet access from WAN, Also forward 18089 to 18089 as well)"
-"Cheers ☠"
+echo "to make changes to the config file:"
+echo "nano $NODE_CONFIG/config.txt"
+echo "Cheers ☠"
 )
