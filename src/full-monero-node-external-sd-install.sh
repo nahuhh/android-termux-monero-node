@@ -117,9 +117,10 @@ cp $TERMUX_SHORTCUTS/Start\ XMR\ Node $TERMUX_BOOT
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
 cd $MONERO_CLI
-./monerod --config-file $NODE_CONFIG/config.txt
+termux-toast -g bottom "Started XMR Node..."
 sleep 1
-termux-toast -g "Started XMR Node..."
+./monerod --config-file $NODE_CONFIG/config.txt
+
 EOF
 
   cat << EOF > Start\ XMR\ Node
@@ -133,7 +134,7 @@ cp $TERMUX_SHORTCUTS/Start\ XMR\ Node $TERMUX_BOOT
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
 sleep 1
-termux-toast -g "Started XMR Node..."
+termux-toast -g middle "Started XMR Node..."
 EOF
 
  cat << EOF > Stop\ XMR\ Node
@@ -147,7 +148,7 @@ termux-notification -i monero -c "🔴 XMR Node Offline" --priority low --alert-
 termux-job-scheduler --cancel --job-id 1
 termux-job-scheduler --cancel --job-id 2
 sleep 1
-termux-toast -g bottom "Stopped XMR Node"
+termux-toast -g middle "Stopped XMR Node"
 
 EOF
 
