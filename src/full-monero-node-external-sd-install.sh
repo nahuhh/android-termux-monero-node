@@ -117,7 +117,7 @@ cp $TERMUX_SHORTCUTS/Start\ XMR\ Node $TERMUX_BOOT
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
 cd $MONERO_CLI
-termux-toast -g bottom "Started XMR Node..."
+termux-toast -g middle "Started XMR Node..."
 sleep 1
 ./monerod --config-file $NODE_CONFIG/config.txt
 
