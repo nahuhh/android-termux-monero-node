@@ -112,7 +112,7 @@ EOF
 CONFIG=$(ls config.txt)
 if [ $CONFIG = config.txt ]
 then
-	DEL=$(termux-dialog radio -t "Existing configuration found" -v "Overwrite,Keep" | jq '.text')
+	DEL=$(termux-dialog radio -t "Existing configuration found" -v "Overwrite,Keep Existing" | jq '.text')
 	if [ "$DEL" != '"Overwrite"' ]
 	then
 	echo Keep Existing
@@ -135,13 +135,13 @@ cd $TERMUX_SHORTCUTS
   cat << EOF > Start\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
 
-RESP=\$(termux-dialog radio -t "Starting node in" -v "Background,Foreground" | jq '.text')
+RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.text')
 	if [ \$RESP = '"Background"' ]
 	then
 	termux-wake-lock
 	cd $MONERO_CLI
 	./monerod --config-file $NODE_CONFIG/config.txt --detach
-	sleep 10
+	sleep 1
 	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications --period-ms 900000
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
@@ -234,6 +234,7 @@ EOF
 
  cat << EOF > Update\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
+sleep 10
 func_xmrnode_install(){
 	./Stop\ XMR\ Node && echo "Monero Node Stopped"
 	cd
