@@ -56,9 +56,9 @@ mkdir -p $TERMUX_SCHEDULED
 mkdir -p $NODE_CONFIG
 
 
-# Download Blocklist
+# Download Blocklist (disabled)
 cd $NODE_CONFIG
-wget -O block.txt https://gui.xmr.pm/files/block.txt
+# wget -O block.txt https://gui.xmr.pm/files/block.txt
 
 # Create Monerod Config file
  cat << EOF > config.default
