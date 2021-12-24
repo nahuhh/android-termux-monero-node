@@ -291,7 +291,6 @@ fi
 EOF
 
 
-
  cat << EOF > Uninstall\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/bash
 RESP=\$(termux-dialog confirm -t "Uninstall XMR Node" -i "Do you wish to remove XMR node and all its associated files? (deleting the blockchain remains optional)" | jq '.text')
@@ -315,19 +314,17 @@ then
 	rm -f Update\ XMR\ Node
 
 	cd $TERMUX_SHORTCUTS
-	RESP=\$(termux-dialog radio -t "Delete blockchain data?" -v "Yes,No" | jq '.index')
-
-	#0 = Uninstall
-	if [ \$RESP = 0 ]
+	RESP=\$(termux-dialog radio -t "Delete blockchain data?" -v "Yes,No" | jq '.text')
+	#'"Yes"' = Uninstall
+	if [ \$RESP = '"Yes"' ]
 	then
         echo "Deleting blockchain data"
 	rm -rf $NODE_DATA
         fi
 
-
-	RESP=\$(termux-dialog radio -t "Delete config file and uninstall script?" -v "Yes,No" | jq '.index')
-	#0 = Uninstall
-	if [ \$RESP = 0 ]
+	RESP=\$(termux-dialog radio -t "Delete config file and uninstall script?" -v "Yes,No" | jq '.text')
+	#'"Yes"' = Uninstall
+	if [ \$RESP = '"Yes"' ]
 	then
         echo "Deleting config file"
 	rm -rf $MONERO
