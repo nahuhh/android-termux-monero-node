@@ -1,4 +1,4 @@
-# android-termux-monero-node
+# Monerod-in-Termux
 Run a Full or Pruned Monero Node on Android using Termux
 
 <center> 
@@ -9,19 +9,19 @@ Run a Full or Pruned Monero Node on Android using Termux
 </center>
 
 ## Table of Contents
-- [android-termux-monero-node](#android-termux-monero-node)
-  - [Table of Contents](#table-of-contents)
-- [Why](#why)
-- [Contributing to the Monero Network](#contributing-to-the-monero-network)
-- [WARNING...](#warning)
-- [Install](#install)
-- [Controls Overview](#controls-overview)
-- [Connecting to your Node / Seeding the Network](#connecting-to-your-node--seeding-the-network)
-  - [Wallet Connections](#wallet-connections)
-  - [P2P Seeding](#p2p-seeding)
-- [Updates](#updates)
-- [TODO's:](#todos)
-- [Donate:](#donate)
+- [Table of Contents](#table-of-contents)
+  - [Why](#why)
+  - [Contributing to the Monero Network](#contributing-to-the-monero-network)
+  - [WARNING...](#warning)
+  - [Install](#install)
+  - [Controls Overview](#controls-overview)
+  - [Connecting to your Node / Seeding the Network](#connecting-to-your-node--seeding-the-network)
+    - [Wallet Connections](#wallet-connections)
+    - [P2P Seeding](#p2p-seeding)
+  - [Updates](#updates)
+  - [TODO's:](#todos)
+  - [Donate:](#donate)
+  - [TLDR:](#tldr)
 
 # Why
 
@@ -35,6 +35,42 @@ No idea how much data Monero uses- you'll almost certainly want to be on WiFi wh
 
 Running a Monero node allows you to connect CakeWallet or Monerujo to the node running in the device itself, rather than connecting to a remote node; this is a safer way of using Monero, and it alleviates network strain on the remote nodes. You should also be able to connect from other devices in your LAN
 
+# TLDR
+
+Android Node Install Script
+
+Notes:
+- SD card recommended
+- Will use SD card for node if available.
+- During install, select "Pruned node" if you have under 150gb of free storage. 
+- A Pruned node requires ~ 50gb if free space.
+
+1. Install the F-Droid App Store (https://f-droid.org/)
+2. Install these Apps from F-Droid (Do NOT install from Play store. If any of these are already installed from gplay, uninstall them)
+- Termux
+- Termux:Boot
+- Termux:Widget
+- Termux:API
+
+2. Disable battery optimization for 
+- Termux
+- Termux:Boot
+
+3. In termux, issue the command 
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termux-monero-node/main/src/full-monero-node-external-sd-install.sh)" 
+```
+4. Follow the prompts. 
+
+All New Users, and SD Users: Select Y when asked to setup storage folders.
+
+All Users of pre 2022 versions, who were NOT using an SD: Select N
+
+All Users: Press Y when/if asked to use package maintainers version of sources.list
+
+5. Add the 2x2 Termux widget to your home screen.
+
+6. If you want the node to run on boot, you'll have to open the termux boot app (once).
 
 # Contributing to the Monero Network
 
@@ -115,21 +151,15 @@ Video Install Guide (Use the code linked in this repo down below rather than the
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termux-monero-node/main/src/full-monero-node-external-sd-install.sh)" 
   ```
 
-  Elaborate Install:
-  
-  Copy the code (INCLUDING the parenthesis) from the links below based on the node type/storage available on your device. 
-
-  Make sure your screen stays 'on' throughout the install- give the screen a tap if necessary.
-
-  Open Termux, and paste the copied code into the terminal. Press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return. 
-
 6. SUCCESS!
 
 # Controls Overview
 
 Using the Termux Widget, you can 'Start XMR Node', 'Stop XMR Node', 'Update XMR Node', and check the 'XMR Node Status'. Try them all- you're not going to break anything.  Tap the arrow in the Android Termux notification in your swipe-down Android notifications to see detailed info on your Node.  If a Monero update is available, it will be present in this notification. 
 
-The notifications will be automatically be updated every 15 minutes. The first notification after restarting your device or starting turning your node on might not be 100% accurate as the Monero node can take a while to start up.  If you press the 'XMR Node Status' button in the Termux widget, you will briefly see the actual command line status of Monerod pop up in a Termux shell, and the Android notification will also update with the most recent node information (useful if you don't want to wait 15 minutes for an update)
+The notifications will be automatically be updated every 15 minutes. The first notification after starting your node will not appear for 30 seconds, and might not be 100% accurate on slower devices. If you press the 'XMR Node Status' button in the Termux widget, you will briefly see the actual command line status of Monerod pop up in a Termux shell, and the Android notification will also update with the most recent node information (useful if you don't want to wait 15 minutes for an update).
+
+Alternatively, you can "Stop" the node, and "Start" it in the foreground.
 
 # Connecting to your Node / Seeding the Network
 
@@ -137,19 +167,19 @@ There are a few ip addresses and ports you need to know when running a wallet on
 
 ## Wallet Connections
 
-NOTE:  YOU WILL NOT BE ABLE TO TRANSACT UNTIL YOUR NODE IS 100% SYNCED.  Continue using remote nodes/whatever you were using before in Cake or Monerujo until you're fully synced.  
+NOTE:  YOU WILL NOT BE ABLE TO TRANSACT UNTIL YOUR NODE IS 100% SYNCED.  Continue using remote nodes/whatever you were using before until you're fully synced.  
 
 | Wallet Connection | IP (Why?) | Port (Why?) |
 | ---------------------------- | ----------- | --------|
-| Point CakeWallet/Monerujo Running on my Android at my XMR Node | 127.0.0.1 (This is Localhost!) | 18081 (Non-Remote RPC Port) |
-| Point an XMR wallet on another device on my local network at my XMR node | VARIES (check router for your local Android device IP) | 18089 (REMOTE RPC Port) |
-| Point an XMR wallet on another device OUTSIDE my local network at my node | Feature Not Available | Feature Not Available |
+| XMR wallet on the same device as Node | 127.0.0.1 (This is Localhost!) | 18081 - Unrestricted RPC Port (Don't Forward) |
+| XMR wallet on a device on same local network as node | Check Notification | 18089 - Restricted RPC Port (Forwarding not needed) |
+| XMR wallet on a device OUTSIDE the local network | Public / Internet facing IP | 18089 - Restricted RPC Port (Forward Ports) |
 
 
 If you're looking to go a little deeper, and understand why the above ip addresses/ports in the table are the way they are, this is the Monero startup command used in the script you ran.  You can look up what each of these items means in [this nice Monerod reference guide]([src/full-monero-node-install](https://monerodocs.org/interacting/monerod-reference/)) 
 
 ```bash
-./monerod --data-dir $NODE_DATA --db-sync-mode safe:sync --enable-dns-blocklist --in-peers 10 --rpc-restricted-bind-ip 0.0.0.0 --rpc-restricted-bind-port 18089 --rpc-bind-ip 127.0.0.1 --rpc-bind-port 18081 --no-igd --no-zmq --detach
+./monerod --data-dir $NODE_DATA --db-sync-mode safe:sync --enable-dns-blocklist --rpc-restricted-bind-ip 0.0.0.0 --rpc-restricted-bind-port 18089 --rpc-bind-ip 127.0.0.1 --rpc-bind-port 18081 --no-igd --no-zmq --detach
 ```
 
 ## P2P Seeding
@@ -172,7 +202,13 @@ Once you've enabled port forwarding of 18080, like magic, the P2P value in the M
 If you decide, for whatever reason, that you want to stop seeding the network, simply stop forwarding port 18080 in your router/remove the port forwarding rule.  
 
 Troubleshooting:
-  - If P2P suddenly stops working for you, it's possible your router changed the port of your Android device (this is normal behavior for a router).  You will likely need to set up your Android device to use a 'static ip'... For this, Google 'static ip address android phone' or 'static ip address Netgear router' and figure out how to make your router always use the same ip internal ip address for your phone (Perhaps I'll add these instructions in the future)
+  - If P2P suddenly stops working for you, it's possible your router changed the IP of your Android device (this is normal behavior for a router).  
+    
+    You will likely need to set up your Android device to use a 'static ip'... For this..
+
+    Open Android Setting, and go to: wifi > tap & hold on current network > edit/modify > [show advanced] > ip settings
+
+    Change DHCP from "auto/dynamic" to "manual/static". 
 
 # Updates
 
@@ -186,12 +222,20 @@ Troubleshooting:
 - [x] Create Uninstaller
 - [x] Custom Configs
 - [x] Run as pruned
-- [ ] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?
+- [x] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?
 - [ ] Secure RPC defaults
 
 # Donate:
 
-- If you enjoy this software, please feel free to send $XMR tips to [CryptoGrampy](https://twitter.com/CryptoGrampy)!
+If you enjoy this software, please feel free to send $XMR tips to:
 
-- $XMR : 85HmFCiEvjg7eysKExQyqh5WgAbExUw6gF8osaE2pFrvUhQdf1HdD6XSTgAr4ECYMre6HjWutPJSdJftQcYEz3m2PYYTE6Y
- 
+[CryptoGrampy](https://twitter.com/CryptoGrampy)!
+$XMR : 
+```
+85HmFCiEvjg7eysKExQyqh5WgAbExUw6gF8osaE2pFrvUhQdf1HdD6XSTgAr4ECYMre6HjWutPJSdJftQcYEz3m2PYYTE6Y
+```
+[nahuhh](https://github.com/nahuhh) ☠️
+$XMR : 
+```
+8343hzpypz2BR5ybAMNvvhaLtbXSMgCT7KqYSTfLBk3DF8Yayi5b7JGRWZc2GdqNu1EkALEFv1FHkCgeQ1zzkUFVMqtcTBy
+```
