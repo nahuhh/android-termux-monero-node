@@ -1,4 +1,4 @@
-# android-termux-monero-node
+# Monerod-in-Termux
 Run a Full or Pruned Monero Node on Android using Termux
 
 <center> 
@@ -9,20 +9,19 @@ Run a Full or Pruned Monero Node on Android using Termux
 </center>
 
 ## Table of Contents
-- [android-termux-monero-node](#android-termux-monero-node)
-  - [Table of Contents](#table-of-contents)
-- [Why](#why)
-- [Contributing to the Monero Network](#contributing-to-the-monero-network)
-- [WARNING...](#warning)
-- [Install](#install)
-- [Controls Overview](#controls-overview)
-- [Connecting to your Node / Seeding the Network](#connecting-to-your-node--seeding-the-network)
-  - [Wallet Connections](#wallet-connections)
-  - [P2P Seeding](#p2p-seeding)
-- [Updates](#updates)
-- [TODO's:](#todos)
-- [Donate:](#donate)
-- [TLDR:](#tldr)
+- [Table of Contents](#table-of-contents)
+  - [Why](#why)
+  - [Contributing to the Monero Network](#contributing-to-the-monero-network)
+  - [WARNING...](#warning)
+  - [Install](#install)
+  - [Controls Overview](#controls-overview)
+  - [Connecting to your Node / Seeding the Network](#connecting-to-your-node--seeding-the-network)
+    - [Wallet Connections](#wallet-connections)
+    - [P2P Seeding](#p2p-seeding)
+  - [Updates](#updates)
+  - [TODO's:](#todos)
+  - [Donate:](#donate)
+  - [TLDR:](#tldr)
 
 # Why
 
@@ -62,8 +61,11 @@ Notes:
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termux-monero-node/main/src/full-monero-node-external-sd-install.sh)" 
 ```
 4. Follow the prompts. 
+
 All New Users, and SD Users: Select Y when asked to setup storage folders.
+
 All Users of pre 2022 versions, who were NOT using an SD: Select N
+
 All Users: Press Y when/if asked to use package maintainers version of sources.list
 
 5. Add the 2x2 Termux widget to your home screen.
@@ -169,8 +171,8 @@ NOTE:  YOU WILL NOT BE ABLE TO TRANSACT UNTIL YOUR NODE IS 100% SYNCED.  Continu
 
 | Wallet Connection | IP (Why?) | Port (Why?) |
 | ---------------------------- | ----------- | --------|
-| XMR wallet on the same device as Node | 127.0.0.1 (This is Localhost!) | 18081 (Unrestricted RPC Port (Don't Forward) |
-| XMR wallet on a device on same local network as node | Check Notification | 18089 (Restricted RPC Port (Forwarding not needed) |
+| XMR wallet on the same device as Node | 127.0.0.1 (This is Localhost!) | 18081 - Unrestricted RPC Port (Don't Forward) |
+| XMR wallet on a device on same local network as node | Check Notification | 18089 - Restricted RPC Port (Forwarding not needed) |
 | XMR wallet on a device OUTSIDE the local network | Public / Internet facing IP | 18089 - Restricted RPC Port (Forward Ports) |
 
 
@@ -200,8 +202,12 @@ Once you've enabled port forwarding of 18080, like magic, the P2P value in the M
 If you decide, for whatever reason, that you want to stop seeding the network, simply stop forwarding port 18080 in your router/remove the port forwarding rule.  
 
 Troubleshooting:
-  - If P2P suddenly stops working for you, it's possible your router changed the IP of your Android device (this is normal behavior for a router).  You will likely need to set up your Android device to use a 'static ip'... For this..
+  - If P2P suddenly stops working for you, it's possible your router changed the IP of your Android device (this is normal behavior for a router).  
+    
+    You will likely need to set up your Android device to use a 'static ip'... For this..
+
     Open Android Setting, and go to: wifi > tap & hold on current network > edit/modify > [show advanced] > ip settings
+
     Change DHCP from "auto/dynamic" to "manual/static". 
 
 # Updates
@@ -221,7 +227,15 @@ Troubleshooting:
 
 # Donate:
 
-- If you enjoy this software, please feel free to send $XMR tips to [CryptoGrampy](https://twitter.com/CryptoGrampy)!
+If you enjoy this software, please feel free to send $XMR tips to:
 
-- $XMR : 85HmFCiEvjg7eysKExQyqh5WgAbExUw6gF8osaE2pFrvUhQdf1HdD6XSTgAr4ECYMre6HjWutPJSdJftQcYEz3m2PYYTE6Y
- 
+[CryptoGrampy](https://twitter.com/CryptoGrampy)!
+$XMR : 
+```
+85HmFCiEvjg7eysKExQyqh5WgAbExUw6gF8osaE2pFrvUhQdf1HdD6XSTgAr4ECYMre6HjWutPJSdJftQcYEz3m2PYYTE6Y
+```
+[nahuhh](https://github.com/nahuhh) ☠️
+$XMR : 
+```
+8343hzpypz2BR5ybAMNvvhaLtbXSMgCT7KqYSTfLBk3DF8Yayi5b7JGRWZc2GdqNu1EkALEFv1FHkCgeQ1zzkUFVMqtcTBy
+```
