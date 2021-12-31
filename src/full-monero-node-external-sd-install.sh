@@ -132,8 +132,9 @@ exit 1
 fi
 
 # Create Sym links to blockchain data and config
-ln -s $NODE_DATA -t $MONERO blockchain
-ln -s $NODE_CONFIG -t $MONERO config
+cd monero
+ln -s $NODE_DATA -T blockchain
+ln -s $NODE_CONFIG -T config
 
 cd $NODE_CONFIG
 # Create Monerod Config file
