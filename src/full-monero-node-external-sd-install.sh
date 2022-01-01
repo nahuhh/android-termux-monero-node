@@ -312,9 +312,8 @@ EOF
  cat << EOF > XMR\ Node\ Status
 #!/data/data/com.termux/files/usr/bin/sh
 cd $MONERO_CLI
-./monerod status
-sleep 3
 ./monerod print_net_stats
+./monerod status
 sleep 5
 cd $TERMUX_SCHEDULED
 ./xmr_notifications
