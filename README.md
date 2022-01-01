@@ -9,7 +9,7 @@ Run a Full or Pruned Monero Node on Android using Termux
 </center>
 
 ## Table of Contents
-- [TLDR](#tldr)
+- [TLDR](#quick-start-guide)
 - [Table of Contents](#table-of-contents)
   - [Why](#why)
   - [Contributing to the Monero Network](#contributing-to-the-monero-network)
@@ -35,7 +35,7 @@ While node can be run on your main device, it is recommended to keep the device 
 Data Usage
 - Over 100 gb initial download.
 - After synced, a few hundred mb/day. 
-- You can check for yourself using "Node Status update".
+- You can check for yourself using the "XMR Node Status" shortcut from the widget.
 
 Running a Monero node allows you to connect your wallet (Feather, CakeWallet, Monerujo etc) to your node, running on the same device or same local network.
 While Monero is private, using a remote node involves some level of trust. 
@@ -43,24 +43,33 @@ A remote node receives certain information from you, such as the date, time of a
 Running a node on Android is an easy and more decentralized way to use Moneero.
 
 
-# TLDR
+# Quick Start Guide
 
 Notes:
 - SD card recommended
 - Will use SD card for node if available.
 - During install, select "Pruned node" if you have under 150gb of free storage. 
 - A Pruned node requires ~ 50gb if free space.
+- Termux:Boot only necessary if you want the node to run automatically at boot.
 
-1. Install the F-Droid App Store (https://f-droid.org/)
+1. Install the [F-Droid App Store](https://f-droid.org/)
 2. Install these Apps from F-Droid (Do NOT install from Play store. If any of these are already installed from gplay, uninstall them)
-- Termux
-- Termux:Boot
-- Termux:Widget
-- Termux:API
+- [Termux](https://f-droid.org/packages/com.termux)
+- [Termux:Boot](https://f-droid.org/packages/com.termux.boot)
+- [Termux:Widget](https://f-droid.org/packages/com.termux.widget)
+- [Termux:API](https://f-droid.org/packages/com.termux.api)
 
-2. Disable battery optimization for 
-- Termux
-- Termux:Boot
+2. Set permissions:
+     Go to
+     1. Settings > Apps
+     2.  Then select: Termux > permissions
+     And
+     - disable battery optimization
+     - enable draw over apps / draw on top
+     3. Go back to settings > apps
+     4. Then select: Termux:boot > permissions
+     And
+     - disable battery optimization 
 
 3. In termux, issue the command 
 ```bash
@@ -68,15 +77,20 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termu
 ```
 4. Follow the prompts. 
 
->  - All New Users, and SD Users: Select Y when asked to setup storage folders.
+**- All New Users, and SD Users:** _Select Y when asked to setup storage folders._
 
->  - All Users of pre 2022 versions, who were NOT using an SD: Select N
+**- All Users of pre 2022 versions, who were NOT using an SD:** _Select N_
 
->  - All Users: Press Y when/if asked to use package maintainers version of sources.list
+**- All Users:** _Press Y when/if asked to use package maintainers version of sources.list_
 
 5. Add the 2x2 Termux widget to your home screen.
 
 6. If you want the node to run on boot, you'll have to open the termux boot app (once).
+
+7. If you'd like the node to run in the foreground, stop and start the node from widget and select "foreground"
+
+8. Have a look at [Wallet Connections](#wallet-connections) on how to connect your wallet to your node.
+  - Optional: [Forwarding P2P ports](#p2p-seeding). See [Contributing to the Monero Network](#contributing-to-the-monero-network) for more info.
 
 # Contributing to the Monero Network
 
@@ -129,10 +143,10 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 1. Install Necessary Apps
     - Install the Fdroid App Store (https://f-droid.org/)
     - Install these Apps from Fdroid (Do NOT install from Play store.  If any of these are already installed, uninstall them)
-        - Termux
-        - Termux:Boot
-        - Termux:Widget
-        - Termux:API
+      - [Termux](https://f-droid.org/packages/com.termux)
+      - [Termux:Boot](https://f-droid.org/packages/com.termux.boot)
+      - [Termux:Widget](https://f-droid.org/packages/com.termux.widget)
+      - [Termux:API](https://f-droid.org/packages/com.termux.api)
 
 <center> 
 <figure>
