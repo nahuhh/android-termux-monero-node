@@ -86,11 +86,13 @@ https://www.reddit.com/r/Monero/comments/ko0xd1/i_put_together_a_new_guide_for_r
 
 # WARNING...
 
-1. DO NOT RUN THIS ON INTERNAL ANDROID STORAGE (use microSD ONLY) OR YOU IT WILL EVENTUALLY BURN OUT (Per Howard Chu) and Run this code AT YOUR OWN RISK and READ THE CODE (and feel free to reach out if you have any improvements 😜).  
+1. Ideally you should store node on external storage (MicroSD etc. Will prompt during install)
+   Regardless of whether the node is stored on SD or Internal..
+   Run this code AT YOUR OWN RISK and READ THE CODE (and feel free to reach out if you have any improvements 😜).
 
-2. MicroSD cards have a limited lifespan in general, and it's possible the card will burn out after a couple years, though I don't have solid metrics on this.  Monero is mostly writes and reads- not rewrites which are what kill storage the fastest.
+2. Monero is mostly writes and reads- not rewrites which are what kill storage the fastest.
 
-3. You WILL (likely) lose data saved on your microSD card.  Backup before running this code.
+3. You risk data saved on your microSD / Internal storage.  Backup before running this code.
 
 4. If things go awry, delete all of the Termux apps you're about to install, and all will be back to normal.
 
@@ -102,9 +104,10 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 [![Monero Full Node Install](https://img.youtube.com/vi/z46zAy-LoHE/0.jpg)](https://www.youtube.com/watch?v=z46zAy-LoHE)
 
 1. Hardware Prep:
-    - Android 7.0+ with ARMv8 CPU (Nearly all made in the last few years are fine)
-      - [Check your Android CPU 'Instruction Set' here](https://www.devicespecifications.com/en/model/f6cb274f)
-    - Freshly wiped 128GB (256GB+ Preferred) microSD set up in Android AS EXTERNAL STORAGE
+    - Android 7.0+ with ARMv8/v7 architecture
+      - The script will check the architecture before running
+    - aprox. 45-128gb free space for pruned node
+    - 150+gb (256GB+ Preferred) for Full Node
 
  <center> 
   <figure>
@@ -157,7 +160,9 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 
 Using the Termux Widget, you can 'Start XMR Node', 'Stop XMR Node', 'Update XMR Node', and check the 'XMR Node Status'. Try them all- you're not going to break anything.  Tap the arrow in the Android Termux notification in your swipe-down Android notifications to see detailed info on your Node.  If a Monero update is available, it will be present in this notification. 
 
-The notifications will be automatically be updated every 15 minutes. The first notification after starting your node will not appear for 30 seconds, and might not be 100% accurate on slower devices. If you press the 'XMR Node Status' button in the Termux widget, you will briefly see the actual command line status of Monerod pop up in a Termux shell, and the Android notification will also update with the most recent node information (useful if you don't want to wait 15 minutes for an update).
+The notification will be automatically be updated every 15 minutes. The first notification after starting your node will not appear until after 30 seconds have passed.
+
+The notification might not be 100% accurate on slower devices. If you press the 'XMR Node Status' button in the Termux widget, you will briefly see the actual command line status of Monerod pop up in a Termux shell, and the Android notification will also update with the most recent node information (useful if you don't want to wait 15 minutes for an update).
 
 Alternatively, you can "Stop" the node, and "Start" it in the foreground.
 
@@ -173,7 +178,7 @@ NOTE:  YOU WILL NOT BE ABLE TO TRANSACT UNTIL YOUR NODE IS 100% SYNCED.  Continu
 | ---------------------------- | ----------- | --------|
 | XMR wallet on the same device as Node | 127.0.0.1 (This is Localhost!) | 18081 - Unrestricted RPC Port (Don't Forward) |
 | XMR wallet on a device on same local network as node | Check Notification | 18089 - Restricted RPC Port (Forwarding not needed) |
-| XMR wallet on a device OUTSIDE the local network | Public / Internet facing IP | 18089 - Restricted RPC Port (Forward Ports) |
+| XMR wallet on a device OUTSIDE the local network | Public / Internet facing IP | 18089 - Restricted RPC Port (Forward Ports, Wi-Fi) |
 
 
 If you're looking to go a little deeper, and understand why the above ip addresses/ports in the table are the way they are, this is the Monero startup command used in the script you ran.  You can look up what each of these items means in [this nice Monerod reference guide]([src/full-monero-node-install](https://monerodocs.org/interacting/monerod-reference/)) 
