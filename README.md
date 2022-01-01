@@ -9,6 +9,7 @@ Run a Full or Pruned Monero Node on Android using Termux
 </center>
 
 ## Table of Contents
+- [TLDR](#tldr)
 - [Table of Contents](#table-of-contents)
   - [Why](#why)
   - [Contributing to the Monero Network](#contributing-to-the-monero-network)
@@ -19,25 +20,30 @@ Run a Full or Pruned Monero Node on Android using Termux
     - [Wallet Connections](#wallet-connections)
     - [P2P Seeding](#p2p-seeding)
   - [Updates](#updates)
-  - [TODO's:](#todos)
-  - [Donate:](#donate)
-  - [TLDR:](#tldr)
+  - [TODO's](#todos)
+  - [Donate](#donate)
 
 # Why
 
 The goal of this project is to give newbs a stupid-easy way to run an energy-efficient, full or pruned Monero node with decent defaults on an Android device.... ideally, this is a few year old device that's currently sitting in a drawer doing nothing.  Why not set it up as a Monero node that sits at your house all day or you toss in a bag for making ultra-secure Monero transactions on the go?  This code and install process isn't meant for power users, people with extreme use cases, etc. If you're already that smart, you should just hack up my code and use it however you like.
 
-Battery Life- 
-I'm running this on a phone that's plugged in most of the time, so I can't speak for battery life; I would assume that once you're fully synced, the battery usage will drop quite a bit. 
+Battery Life
+- Recommend keeping plugged in during initial sync (can take a couple days).
+Usage afterward sync completion is quite low, but not 0 due to wake-lock being enabled. 
+While node can be run on your main device, it is recommended to keep the device plugged in when running, or better, to run on a spare/old device. 
 
-Data Usage-
-No idea how much data Monero uses- you'll almost certainly want to be on WiFi while it's initially syncing, and turn off the node while out and about.  My node sits on a shelf next to my wifi router.  
+Data Usage
+- Over 100 gb initial download.
+- After synced, a few hundred mb/day. 
+- You can check for yourself using "Node Status update".
 
-Running a Monero node allows you to connect CakeWallet or Monerujo to the node running in the device itself, rather than connecting to a remote node; this is a safer way of using Monero, and it alleviates network strain on the remote nodes. You should also be able to connect from other devices in your LAN
+Running a Monero node allows you to connect your wallet (Feather, CakeWallet, Monerujo etc) to your node, running on the same device or same local network.
+While Monero is private, using a remote node involves some level of trust. 
+A remote node receives certain information from you, such as the date, time of a tx and the ip that sent it to the node.  
+Running a node on Android is an easy and more decentralized way to use Moneero.
+
 
 # TLDR
-
-Android Node Install Script
 
 Notes:
 - SD card recommended
@@ -62,11 +68,11 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termu
 ```
 4. Follow the prompts. 
 
-All New Users, and SD Users: Select Y when asked to setup storage folders.
+>  - All New Users, and SD Users: Select Y when asked to setup storage folders.
 
-All Users of pre 2022 versions, who were NOT using an SD: Select N
+>  - All Users of pre 2022 versions, who were NOT using an SD: Select N
 
-All Users: Press Y when/if asked to use package maintainers version of sources.list
+>  - All Users: Press Y when/if asked to use package maintainers version of sources.list
 
 5. Add the 2x2 Termux widget to your home screen.
 
@@ -74,9 +80,12 @@ All Users: Press Y when/if asked to use package maintainers version of sources.l
 
 # Contributing to the Monero Network
 
-If you simply install and run this software without making any updates in your router, you are actually LEECHING from the rest of the users of the network.  To truly contribute back to the network, open port 18080 in your router to seed (distribute) the Monero blockchain to the rest. To verify you're helping seed the network and that you've set up your router correctly, you will see  🌱 P2P: 5 (some number larger than 0)  in your Android notifications.    
+If you run this software without [forwarding P2P ports](#p2p-seeding), you be leeching from the rest of the users of the network.  [Forwarding P2P port 18080](#p2p-seeding) will allow you to contribute to the network by seed (distributing) the Monero blockchain. 
+To verify you're helping seed the network and that you've set up your router correctly, you will see  🌱 P2P: 5 (some number larger than 0) in your Android notifications.   
 
-While I DO recommend connecting to your Android node from within your local network using RPC, I DON'T recommend opening the RPC port in your router (yet).  
+While I DO recommend connecting your wallet to your Android node from within your local network using RPC..
+I don't recommend opening port 18089 - to the Restricted RPC port (18089) in your router unless access from outside the LAN is necessary.
+_Do not forward 18081 (the UNRESTRICTED) RPC port._
 
 More info on running a Monero Node:
 
@@ -92,9 +101,9 @@ https://www.reddit.com/r/Monero/comments/ko0xd1/i_put_together_a_new_guide_for_r
 
 2. Monero is mostly writes and reads- not rewrites which are what kill storage the fastest.
 
-3. You risk data saved on your microSD / Internal storage.  Backup before running this code.
+3. You may risk data saved on your microSD / Internal storage.  Recommended to backup before running this code.
 
-4. If things go awry, delete all of the Termux apps you're about to install, and all will be back to normal.
+4. If things go awry, delete all of the Termux apps you're about to install, and all will be back to normal. ^ except for corrupt data.
 
 
 # Install
@@ -174,22 +183,24 @@ There are a few ip addresses and ports you need to know when running a wallet on
 
 NOTE:  YOU WILL NOT BE ABLE TO TRANSACT UNTIL YOUR NODE IS 100% SYNCED.  Continue using remote nodes/whatever you were using before until you're fully synced.  
 
-| Wallet Connection | IP (Why?) | Port (Why?) |
-| ---------------------------- | ----------- | --------|
-| XMR wallet on the same device as Node | 127.0.0.1 (This is Localhost!) | 18081 - Unrestricted RPC Port (Don't Forward) |
-| XMR wallet on a device on same local network as node | Check Notification | 18089 - Restricted RPC Port (Forwarding not needed) |
-| XMR wallet on a device OUTSIDE the local network | Public / Internet facing IP | 18089 - Restricted RPC Port (Forward Ports, Wi-Fi) |
+| Wallet relationship to node: | IP (Why?) | Port (Why?) | Forward? |
+| ---------------------------- | ------ | ------ | --- |
+| The same device | 127.0.0.1 (This is Localhost!) | 18081 (Unrestricted RPC Port) | Yes |
+| Different devices on the same local network | Check Notification | 18089 (Restricted RPC Port) | No |
+| Different devices on seperate networks | Public / Internet facing IP. [Search DuckDuckGo for ”my ip"](https://ddg.gg/my+ip)| 18089 (Restricted RPC Port) | Yes |
 
-
-If you're looking to go a little deeper, and understand why the above ip addresses/ports in the table are the way they are, this is the Monero startup command used in the script you ran.  You can look up what each of these items means in [this nice Monerod reference guide]([src/full-monero-node-install](https://monerodocs.org/interacting/monerod-reference/)) 
-
-```bash
-./monerod --data-dir $NODE_DATA --db-sync-mode safe:sync --enable-dns-blocklist --rpc-restricted-bind-ip 0.0.0.0 --rpc-restricted-bind-port 18089 --rpc-bind-ip 127.0.0.1 --rpc-bind-port 18081 --no-igd --no-zmq --detach
-```
+These are the default ports set in the config file.
+You can edit the config file (located at crypto/monero-cli).
+[Here is a nice Monerod reference guide]([src/full-monero-node-install](https://monerodocs.org/interacting/monerod-reference/)) 
 
 ## P2P Seeding
 
-If you want to seed the Monero network in the same way you would seed a torrent, and YES, I do encourage this, in your router, you need to forward port 18080 (NOT 18081 and NOT 18089) to your Android device.  This process varies by router, but if you google 'port forwarding netgear (whatever your router brand is), you will find a guide.
+If you want to seed (help distribute) the Monero network (Recommended)
+| Internal IP | Port (Why?) |
+| -------------- | ------------- |
+| Check Notification for IP | 18080 (P2P Port) |
+
+This process varies by router, but if you [DuckDuckGo "port forwarding"](https://ddg.gg/port-forwarding) and add the name / brand of your router, you will find a guide.
 
 For instance, this is how mine is setup: 
 
@@ -217,30 +228,28 @@ Troubleshooting:
 
 # Updates
 
-- Termux Node Code:  If you find out that I've added an amazing new feature, and you want to update your code, simply copy the newly updated install script from Github and paste it into a Termux shell- it's the same process as the initial install.  I will do my best to take care of any cleanup activities that need to happen.  
+- Termux Node Code:  Simply run
+```bash
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termux-monero-node/main/src/full-monero-node-external-sd-install.sh)" 
+  ```
+  and follow the prompts.
 
-- Monero:  If you receive a notification that there is a new Monero version out (or perhaps you find out on Reddit, Twitter, etc), simply run the 'Update XMR Node' Termux shortcut through the Termux Widget.  
+- Monero:  If a new version is available, you can run the 'Update XMR Node' shortcut to install the new version.  
 
 # TODO's:
 
-- [x] Turn off notifications and boot wake locks when user turns node off/add them back when node is turned on
-- [x] Create Uninstaller
-- [x] Custom Configs
-- [x] Run as pruned
-- [x] Check for external SD, if doesn't exist use different/symlinked install dir, check space before installing?
-- [ ] Secure RPC defaults
+- TBD
 
 # Donate:
 
-If you enjoy this software, please feel free to send $XMR tips to:
+If you enjoy this software, please feel free to send a tip to:
 
-[CryptoGrampy](https://twitter.com/CryptoGrampy)!
-$XMR : 
+**[CryptoGrampy](https://twitter.com/CryptoGrampy)!** $XMR:
 ```
 85HmFCiEvjg7eysKExQyqh5WgAbExUw6gF8osaE2pFrvUhQdf1HdD6XSTgAr4ECYMre6HjWutPJSdJftQcYEz3m2PYYTE6Y
 ```
-[nahuhh](https://github.com/nahuhh) ☠️
-$XMR : 
+
+**_[nahuhh](https://github.com/nahuhh)_** ☠️ $XMR:
 ```
 8343hzpypz2BR5ybAMNvvhaLtbXSMgCT7KqYSTfLBk3DF8Yayi5b7JGRWZc2GdqNu1EkALEFv1FHkCgeQ1zzkUFVMqtcTBy
 ```
