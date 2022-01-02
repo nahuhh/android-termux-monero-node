@@ -34,8 +34,10 @@ While node can be run on your main device, it is recommended to keep the device 
 
 Data Usage
 - Over 100 gb initial download.
-- After synced, a few hundred mb/day. 
-- You can check for yourself using the "XMR Node Status" shortcut from the widget.
+- After synced and using config settings of: 1gb max up/down speeds; 32/100 out/in peers; averaging 25kb/s up/down:
+  - Approx 2gb/day (dl) as of Sunday, January 02, 2022. 
+  - Slightly more than 4gb if P2P seeding is enabled.
+- You can check your data usage using the **XMR Node Status** shortcut from the widget. It will show in the terminal that pops up.
 
 Running a Monero node allows you to connect your wallet (Feather, CakeWallet, Monerujo etc) to your node, running on the same device or same local network.
 While Monero is private, using a remote node involves some level of trust. 
