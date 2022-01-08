@@ -106,11 +106,11 @@ CONFIRM_EXTERNAL=$(termux-dialog confirm -t "SD confirmation" -i "Are you using 
 
 All Flash Storage has a limited number of writes. This includes SD, SSD, and Internal Storage.
 
-Should the Node use all available write cycles, the storage - or device - will be bricked.
+Should the Node use all available write cycles, the storage - or this device - will be bricked.
 
 For this reason, external storage is recommended.
 
-Would like to use INTERNAL Storage?" | jq '.text')
+Would you like to use INTERNAL Storage?" | jq '.text')
         	if [ "$CONFIRM_INTERNAL" = '"yes"' ]
         	then
         	mkdir -p $INTERNAL_NODE
@@ -133,11 +133,11 @@ CONFIRM_INTERNAL=$(termux-dialog confirm -t "Internal Storage" -i \
 
 All Flash Storage has a limited number of writes. This includes SD, SSD, and Internal Storage.
 
-Should the Node use all available write cycles, the storage - or device - will be bricked.
+Should the Node use all available write cycles, the storage - or this device - will be bricked.
 
 For this reason, external storage is recommended.
 
-Would like to use INTERNAL Storage?" | jq '.text')
+Would you like to use INTERNAL Storage?" | jq '.text')
 	if [ "$CONFIRM_INTERNAL" = '"yes"' ]
 	then
         mkdir -p $INTERNAL_NODE
