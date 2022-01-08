@@ -129,7 +129,7 @@ Would you like to use INTERNAL Storage?" | jq '.text')
 elif [ "$INTERNAL_FREE" -gt '50000000' ]
 then
 CONFIRM_INTERNAL=$(termux-dialog confirm -t "Internal Storage" -i \
-"               •WARNING•
+"                       •WARNING•
 
 All Flash Storage has a limited number of writes. This includes SD, SSD, and Internal Storage.
 
