@@ -112,16 +112,8 @@ Video Install Guide (Use the code linked in this repo down below rather than the
 
   Quick Install- Copy and paste this into Termux, and press Enter
   ```bash
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termux-monero-node/main/src/full-monero-node-external-sd-install.sh)" 
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/CryptoGrampy/android-termux-monero-node/main/src/install-monerod-CG.sh)" 
   ```
-
-  Elaborate Install:
-  
-  Copy the code (INCLUDING the parenthesis) from the links below based on the node type/storage available on your device. 
-
-  Make sure your screen stays 'on' throughout the install- give the screen a tap if necessary.
-
-  Open Termux, and paste the copied code into the terminal. Press the return button on the on-screen keyboard. You will likely need to give Termux permission to do various things (add repos, etc) during the install.  Read what it's asking, type y and then press return. 
 
 6. SUCCESS!
 
