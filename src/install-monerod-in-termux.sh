@@ -375,7 +375,7 @@ EOF
 
  cat << EOF > Update\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
-sleep 30
+sleep 5
 func_xmrnode_install(){
 	./Stop\ XMR\ Node && echo "Monero Node Stopped"
 	cd
