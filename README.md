@@ -145,7 +145,7 @@ NOTE:  YOU WILL NOT BE ABLE TO TRANSACT UNTIL YOUR NODE IS 100% SYNCED.
 | ---------------------------- | ------ | ------ | --- |
 | The same device | 127.0.0.1 | 18081 (Unrestricted RPC Port) | Yes |
 | Different devices on the same local network | Check Notification | 18089 (Restricted RPC Port) | No |
-| Different devices on seperate networks | Public / Internet facing IP. [Search DuckDuckGo for ”my ip"](https://ddg.gg/my+ip)| 18089 (Restricted RPC Port) | Yes |
+| Different devices on seperate networks | Public / Internet facing IP. [Search DuckDuckGo for ”my ip"](https://ddg.gg/?q=my+ip&ia=answer)| 18089 (Restricted RPC Port) | Yes |
 
 These are the default ports set in the config file.
 You can edit the config file (located at crypto/monero-cli).
