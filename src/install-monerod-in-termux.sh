@@ -371,7 +371,7 @@ cp xmr_notifications xmr_notifications_unwake
 
 # Start notification
 tee -a xmr_notifications <<EOF 
-termux-notification -i monero -c "\$STATUS (\$LAST)" -t "\$NOTIFICATION" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "RELEASE WAKELOCK" --button2-action 'termux-wake-unlock | bash -l -c termux-scheduled/xmr_notifications_unwake' --button3 "REFRESH STATUS" --button3-action 'bash -l -c termux-scheduled/xmr_notifications'
+termux-notification -i monero -c "\$NOTIFICATION" -t "\$STATUS (\$LAST)" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "RELEASE WAKELOCK" --button2-action 'termux-wake-unlock | bash -l -c termux-scheduled/xmr_notifications_unwake' --button3 "REFRESH STATUS" --button3-action 'bash -l -c termux-scheduled/xmr_notifications'
 termux-toast -g middle -b black -c green Node Running! Check Notification.
 else
 
