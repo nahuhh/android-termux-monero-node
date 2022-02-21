@@ -194,7 +194,7 @@ cd $NODE_CONFIG
 	#confirm-external-bind=1       # Open node (confirm). Required if binding outside of localhost
 	#restricted-rpc=1              # Prevent unsafe RPC calls.
 # Services
-	rcp-ssl=enabled
+	rpc-ssl=enabled
   	no-zmq=1
 	no-igd=1                         # Disable UPnP port mapping
 	db-sync-mode=safe                # Slow but reliable db writes
