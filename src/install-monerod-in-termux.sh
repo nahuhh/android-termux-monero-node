@@ -347,7 +347,7 @@ EOF
  cat << 'EOF' > xmr_notifications
 #!/data/data/com.termux/files/usr/bin/sh
 sleep 7
-REQ=$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
+REQ=$(curl -sk https://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
 LAST=$(date +%r)
 if [ "$REQ" ]
 then
@@ -433,7 +433,7 @@ func_xmrnode_install_prompt(){
 	fi
 }
 
-REQ=\$(curl -s http://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
+REQ=\$(curl -sk https://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
 if [ "\$REQ" ]
 then
 	DATA=\$(echo \$REQ | jq '.result')
