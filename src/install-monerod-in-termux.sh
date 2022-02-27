@@ -193,8 +193,9 @@ cd $NODE_CONFIG
 	rpc-bind-port=18081           # Default = 18081
 	#confirm-external-bind=1       # Open node (confirm). Required if binding outside of localhost
 	#restricted-rpc=1              # Prevent unsafe RPC calls.
+
 # Services
-	rpc-ssl=enabled
+	rpc-ssl=autodetect
   	no-zmq=1
 	no-igd=1                         # Disable UPnP port mapping
 	db-sync-mode=safe                # Slow but reliable db writes
@@ -204,7 +205,6 @@ cd $NODE_CONFIG
 	#enforce-dns-checkpointing=1
 	disable-dns-checkpoints=1
 	enable-dns-blocklist=1
-	
 
 
 # Connection Limits
@@ -354,7 +354,7 @@ then
 
 EOF
 
-# Refresh Notification handling  (not ideal method method)
+# Refresh Notification handling  (not ideal method)
 
 cp xmr_notifications xmr_notifications_released
 
