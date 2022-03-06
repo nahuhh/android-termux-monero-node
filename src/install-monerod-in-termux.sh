@@ -9,6 +9,9 @@ SD_NODE=~/storage/external-1/bitmonero
 TERMUX_BOOT=~/.termux/boot
 TERMUX_SHORTCUTS=~/.shortcuts
 TERMUX_SCHEDULED=~/termux-scheduled
+TOR_RPC=~/monero-cli/tor/hidden_service/monero-rpc
+TOR_P2P=~/monero-cli/tor/hidden_service/monero-p2p
+
 MONERO_CLI_URL=""
 
 AUTO_UPDATE=0
@@ -53,6 +56,9 @@ mkdir -p $NODE_CONFIG
 mkdir -p $TERMUX_BOOT
 mkdir -p $TERMUX_SHORTCUTS
 mkdir -p $TERMUX_SCHEDULED
+mkdir -p $TOR_RPC
+mkdir -p $TOR_P2P
+
 cd $MONERO
 ln  -sfT $TERMUX_SHORTCUTS widget\ scripts
 
@@ -285,24 +291,30 @@ RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.
 	if [ \$RESP = '"Background"' ]
 	then
 	termux-wake-lock
-	cd $MONERO_CLI
-	./monerod --config-file $NODE_CONFIG/config.txt --detach
-	sleep 15
+	.$MONERO_CLI/monerod --config-file $NODE_CONFIG/config.txt --detach
+	tor
 	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
+	cd $MONERO/tor
+	cat $TOR_P2P/hostname > P2P_18080.onion.txt
+	cat $TOR_RPC/hostname > RPC_18089.onion.txt
+	cd
 	sleep 1
 	fi
 
 	if [ \$RESP = '"Foreground"' ]
 	then
 	termux-wake-lock
+	tor
 	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
-	cd $MONERO_CLI
-	sleep 1
-	./monerod --config-file $NODE_CONFIG/config.txt
+	sleep 3
+	cd $MONERO/tor
+	cat $TOR_P2P/hostname > P2P_18080.onion.txt
+	cat $TOR_RPC/hostname > RPC_18089.onion.txt
+	cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt
 fi
 exit 0
 
@@ -312,21 +324,25 @@ EOF
   cat << EOF > .Boot\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
 termux-wake-lock
-cd $MONERO_CLI
-./monerod --config-file $NODE_CONFIG/config.txt --detach
+cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt --detach
+cd
 sleep 15
+tor
 cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
+cd $MONERO/tor
+cat $TOR_P2P/hostname > P2P_18080.onion.txt
+cat $TOR_RPC/hostname > RPC_18089.onion.txt
+cd
 sleep 1
 EOF
 
  cat << EOF > Stop\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
-cd $MONERO_CLI
-./monerod exit && tail --pid=\$(pidof monerod) -f /dev/null && echo 'Exited'
+cd $MONERO_CLI && ./monerod exit && tail --pid=\$(pidof monerod) -f /dev/null && echo 'Exited'
 rm -f $TERMUX_BOOT/Boot\ XMR\ Node
-
+pkill tor
 termux-wake-unlock
 termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low --alert-once
 termux-job-scheduler --cancel --job-id 1
@@ -418,7 +434,6 @@ func_xmrnode_install(){
 	mv monero-a* $MONERO_CLI
 	cd $TERMUX_SHORTCUTS
 	sleep 1
-	termux-toast -g bottom "Starting XMR Node.."
 	./Start\ XMR\ Node
 }
 
@@ -519,8 +534,29 @@ cp .Boot\ XMR\ Node  $TERMUX_BOOT/Boot\ XMR\ Node
 mv xmr_notifications* $TERMUX_SCHEDULED
 cp Update\ XMR\ Node $TERMUX_SCHEDULED
 
+# Install TOR
+pkg install tor -y
+
+# Edit TOR config
+cd $MONERO/tor
+
+## Create TOR user config
+cat << EOF > torrc.txt
+## Tor Monero RPC HiddenService
+HiddenServiceDir $TOR_RPC
+HiddenServicePort 18089 127.0.0.1:18089
+## Tor Monero P2P HiddenService
+HiddenServiceDir $TOR_P2P
+HiddenServicePort 18080 127.0.0.1:18080
+AvoidDiskWrites 1
+RunAsDaemon 1
+EOF
+
+# Include additions in original torrc
+sed -i -z "s|#%include /etc/torrc.d/\*.conf|%include $MONERO/tor/torrc.txt|g" $PREFIX/etc/tor/torrc
 
 # Start
+
 cd $TERMUX_SHORTCUTS
 ./Stop\ XMR\ Node && echo "Monero Node Stopped"
 cd
@@ -532,6 +568,7 @@ mv monero-a* $MONERO_CLI
 cd $TERMUX_SHORTCUTS
 ./.Boot\ XMR\ Node
 
+cd
 echo "I'm Done! 👍.
 ..."
 sleep 1
