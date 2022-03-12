@@ -214,7 +214,7 @@ cd $NODE_CONFIG
 	p2p-bind-ip=127.0.0.1           # Bind to local interface. Default is local 127.0.0.1
 	p2p-bind-port=18080		# Bind to default port
 # TOR P2P
-	anonymous-inbound=$ONION:18083,127.0.0.1:18083,32 # Inbound P2P
+	anonymous-inbound=$ONION:18083,127.0.0.1:18083,32
 	proxy=127.0.0.1:9050		# Proxy through TOR
 	tx-proxy=tor,127.0.0.1:9050,32	# relay tx over tor
 
@@ -427,15 +427,16 @@ DATA=$(echo $REQ | jq '.result')
 	SYNC_STATUS=$(printf %.1f $(echo "$DATA" | jq '(.height / .target_height)*100'))
 	STORAGE_REMAINING=$(printf %.1f $(echo "$DATA" | jq '.free_space * 0.000000001'))
 	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip') | tr -d '"')
+	TOR_RPC=$(cat ~/monero-cli/tor/HIDDEN_SERVICE.txt)
 
-	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: ${LOCAL_IP}:18089" "$UPDATE_AVAILABLE" )
+	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: ${LOCAL_IP}:18089" "🧅 Onion: Port 18089 - Tap to Copy Address" "$UPDATE_AVAILABLE" )
 
 else
 	STATUS="🔴 ERROR: Is your node running? ($LAST)"
 	NOTIFICATION="Refresh the notification.
 Otherwise, restart the node"
 fi
-termux-notification -i monero -c "$NOTIFICATION" -t "$STATUS ($LAST)" --ongoing --priority low --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "ACQUIRE WAKELOCK" --button2-action 'termux-wake-lock | termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000' --button3 "REFRESH STATUS" --button3-action 'bash -l -c termux-scheduled/GET_REFRESH'
+termux-notification -i monero -c "$NOTIFICATION" -t "$STATUS ($LAST)" --ongoing --priority low --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "ACQUIRE WAKELOCK" --button2-action 'termux-wake-lock | termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000' --button3 "REFRESH STATUS" --button3-action 'bash -l -c termux-scheduled/GET_REFRESH' --action 'cat ~/monero-cli/tor/HIDDEN_SERVICE.txt | termux-clipboard-set | termux-scheduled/GET_REFRESH'
 EOF
 
 
@@ -594,19 +595,13 @@ echo "
   - WiFi > edit saved network > advanced > DHCP
   - You'll need to change from "automatic" to "manual", and set the IP to:
     $(termux-wifi-connectioninfo | jq '.ip')
-4. To enable P2P seeding:
-  - Go to your router settings (usually 192.168.0.1 in your browser)
-    Find "Port Forwarding",and forward
-    "public/external" port 18080 to "internal/private" port 18080,
-    Setting the "internal/private" ip to:
-    $(termux-wifi-connectioninfo | jq '.ip')
-4b. To enable Wallet access from WAN:
-      - Forward port 18089 to 18089
-5.  The config file is located on your internal storage at
+3b. You will need to edit the config restricted-bind-ip
+    Change from 127.0.0.1 to the above IP.
+4.  The config file is located on your internal storage at
        	crypto/monero-cli/config
 
-		TOR
-    Your hidden service is ​$ONION
+Connect from the same device using 127.0.0.1 port 18081
+Connect from outside devices over TOR using $ONION port 18089
 
 	      ☠️ Cheers ☠️ "
 )
