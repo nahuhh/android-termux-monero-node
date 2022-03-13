@@ -236,7 +236,7 @@ cd $NODE_CONFIG
 # Services
 	rpc-ssl=autodetect		# default = autodetect
   	#no-zmq=1			# 1 to close
-  	zmq-pub=127.0.0.1:18083		# enable p2pool
+  	zmq-pub=tcp://127.0.0.1:18083	# enable p2pool
 	no-igd=1			# Disable UPnP port mapping
 	db-sync-mode=fast:async:1000000	# Switch to db-sync-mode=safe for slow but more reliable db writes
 
