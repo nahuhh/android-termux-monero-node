@@ -51,6 +51,8 @@ termux-wake-lock
 sleep 1
 pkg update -y
 pkg install nano wget termux-api jq -y
+apt autoremove -y
+apt autoclean
 
 # Create Directories
 
@@ -383,7 +385,7 @@ termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low --alert
 termux-job-scheduler --cancel --job-id 1
 termux-job-scheduler --cancel --job-id 2
 sleep 1
-termux-toast -g middle "Stopped XMR Node"
+cd && termux-toast -g middle "Stopped XMR Node"
 
 EOF
 
@@ -570,16 +572,23 @@ cp .Boot\ XMR\ Node  $TERMUX_BOOT/Boot\ XMR\ Node
 mv xmr_notifications* $TERMUX_SCHEDULED
 cp Update\ XMR\ Node $TERMUX_SCHEDULED
 
-# Start
+# Download Monero Software
 
 cd $TERMUX_SHORTCUTS
 ./Stop\ XMR\ Node && echo "Monero Node Stopped"
 cd
+if [ -f $MONERO_CLI/monerod ]
+then
+echo Monerod is already downloaded. Skipping.
+else
 wget -c -O monero.tar.bzip2 $MONERO_CLI_URL
 tar jxvf monero.tar.bzip2
 rm monero.tar.bzip2
 rm -rf $MONERO_CLI
 mv monero-a* $MONERO_CLI
+fi
+
+# Start Node
 cd $TERMUX_SHORTCUTS
 ./.Boot\ XMR\ Node
 
