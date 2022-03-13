@@ -228,7 +228,12 @@ cd $NODE_CONFIG
 # TOR Peers
 	# Trusted by nah.uhh
 	add-peer=qstotuswqshpfq3tk5ue6ngbx6rge3macsfa7qyt5j4caopixxhckpad.onion:18084
+	add-peer=xnmc66dvkqcxr5vo3svqbijqhru24ashrq4ljiz5vr2kpv6c7govhxqd.onion:18084
+	add-peer=idh6t6ez7p44hipb7yrt4a4tpsmb6sug6qvyjgynd5wkf2juljo5styd.onion:18084
+
 	add-priority-node=qstotuswqshpfq3tk5ue6ngbx6rge3macsfa7qyt5j4caopixxhckpad.onion:18084
+	add-priority-node=xnmc66dvkqcxr5vo3svqbijqhru24ashrq4ljiz5vr2kpv6c7govhxqd.onion:18084
+	add-priority-node=idh6t6ez7p44hipb7yrt4a4tpsmb6sug6qvyjgynd5wkf2juljo5styd.onion:18084
 
 # Restricted RPC binds (allow restricted access)
 # Uncomment below for access to the node from LAN/WAN. May require port forwarding for WAN access
