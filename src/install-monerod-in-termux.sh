@@ -10,7 +10,6 @@ TERMUX_BOOT=~/.termux/boot
 TERMUX_SHORTCUTS=~/.shortcuts
 TERMUX_SCHEDULED=~/termux-scheduled
 TOR_HS=~/monero-cli/tor/hidden_service/monero-rpc
-
 MONERO_CLI_URL=""
 
 AUTO_UPDATE=0
@@ -25,7 +24,12 @@ esac
 
 
 # Preconfigure
+if [ -d storage/downloads ]
+then
+echo Storage already configured. Skipping.
+else
 termux-setup-storage
+fi
 
 RESP=$(termux-dialog confirm -t "XMR Node" -i \
 "This script will install the latest Monero Node software on your device
@@ -180,7 +184,7 @@ cat << EOF > torrc.txt
 HiddenServiceDir $TOR_HS
 HiddenServicePort 18089 127.0.0.1:18089
 ## Tor Monero P2P HiddenService
-HiddenServicePort 18083 127.0.0.1:18083
+HiddenServicePort 18084 127.0.0.1:18084
 AvoidDiskWrites 1
 RunAsDaemon 1
 EOF
@@ -212,11 +216,11 @@ cd $NODE_CONFIG
 
 # P2P (seeding) binds
 	p2p-bind-ip=127.0.0.1           # Bind to local interface. Default is local 127.0.0.1
-	p2p-bind-port=18080		# Bind to default port
+	# p2p-bind-port=18080		# Bind to default port
 # TOR P2P
-	anonymous-inbound=$ONION:18083,127.0.0.1:18083,32
+	anonymous-inbound=$ONION:18084,127.0.0.1:18084,64
 	proxy=127.0.0.1:9050		# Proxy through TOR
-	tx-proxy=tor,127.0.0.1:9050,32	# relay tx over tor
+	tx-proxy=tor,127.0.0.1:9050,64	# relay tx over tor
 
 # Restricted RPC binds (allow restricted access)
 # Uncomment below for access to the node from LAN/WAN. May require port forwarding for WAN access
@@ -231,7 +235,8 @@ cd $NODE_CONFIG
 
 # Services
 	rpc-ssl=autodetect		# default = autodetect
-  	no-zmq=1			# 0 for p2pool
+  	#no-zmq=1			# 1 to close
+  	zmq-pub=127.0.0.1:18083		# enable p2pool
 	no-igd=1			# Disable UPnP port mapping
 	db-sync-mode=fast:async:1000000	# Switch to db-sync-mode=safe for slow but more reliable db writes
 
@@ -243,7 +248,7 @@ cd $NODE_CONFIG
 
 
 # Connection Limits
-	out-peers=32			# This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
+	out-peers=64			# This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
 	in-peers=32			# The default is unlimited; we prefer to put a cap on this
 	limit-rate-up=1048576		# 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
 	limit-rate-down=1048576		# 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
