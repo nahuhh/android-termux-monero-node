@@ -268,8 +268,8 @@ cd $NODE_CONFIG
 EOF
 
 # Dont add self as a peer
-sed -i -z "|add-peer=$ONION|# add-peer=$ONION|" config.default
-sed -i -z "|add-priority-node=$ONION|# add-priority-node=$ONION|" config.default
+sed -i -z "s|add-peer=$ONION|# add-peer=$ONION|g" config.default
+sed -i -z "s|add-priority-node=$ONION|# add-priority-node=$ONION|g" config.default
 
 # Stop TOR
 pkill tor
