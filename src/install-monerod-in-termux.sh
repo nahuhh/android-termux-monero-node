@@ -219,10 +219,16 @@ cd $NODE_CONFIG
 # P2P (seeding) binds
 	p2p-bind-ip=127.0.0.1           # Bind to local interface. Default is local 127.0.0.1
 	# p2p-bind-port=18080		# Bind to default port
+
 # TOR P2P
 	anonymous-inbound=$ONION:18084,127.0.0.1:18084,64
 	proxy=127.0.0.1:9050		# Proxy through TOR
 	tx-proxy=tor,127.0.0.1:9050,64	# relay tx over tor
+
+# TOR Peers
+	# Trusted by nah.uhh
+	add-peer=qstotuswqshpfq3tk5ue6ngbx6rge3macsfa7qyt5j4caopixxhckpad.onion:18084
+	add-priority-node=qstotuswqshpfq3tk5ue6ngbx6rge3macsfa7qyt5j4caopixxhckpad.onion:18084
 
 # Restricted RPC binds (allow restricted access)
 # Uncomment below for access to the node from LAN/WAN. May require port forwarding for WAN access
@@ -237,7 +243,7 @@ cd $NODE_CONFIG
 
 # Services
 	rpc-ssl=autodetect		# default = autodetect
-  	#no-zmq=1			# 1 to close
+	#no-zmq=1			# 1 to close
   	zmq-pub=tcp://127.0.0.1:18083	# enable p2pool
 	no-igd=1			# Disable UPnP port mapping
 	db-sync-mode=fast:async:1000000	# Switch to db-sync-mode=safe for slow but more reliable db writes
@@ -255,6 +261,10 @@ cd $NODE_CONFIG
 	limit-rate-up=1048576		# 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
 	limit-rate-down=1048576		# 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
 EOF
+
+# Dont add self as a peer
+sed -i -z "|add-peer=$ONION|# add-peer=$ONION|"
+sed -i -z "|add-priority-node=$ONION|# add-priority-node=$ONION|"
 
 # Stop TOR
 pkill tor
