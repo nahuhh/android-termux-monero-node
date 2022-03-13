@@ -9,6 +9,7 @@ SD_NODE=~/storage/external-1/bitmonero
 TERMUX_BOOT=~/.termux/boot
 TERMUX_SHORTCUTS=~/.shortcuts
 TERMUX_SCHEDULED=~/termux-scheduled
+TOR_HS=~/monero-cli/tor/hidden_service/monero-rpc
 MONERO_CLI_URL=""
 
 AUTO_UPDATE=0
@@ -23,7 +24,12 @@ esac
 
 
 # Preconfigure
+if [ -d storage/downloads ]
+then
+echo Storage already configured. Skipping.
+else
 termux-setup-storage
+fi
 
 RESP=$(termux-dialog confirm -t "XMR Node" -i \
 "This script will install the latest Monero Node software on your device
@@ -45,6 +51,8 @@ termux-wake-lock
 sleep 1
 pkg update -y
 pkg install nano wget termux-api jq -y
+apt autoremove -y
+apt autoclean
 
 # Create Directories
 
@@ -53,6 +61,8 @@ mkdir -p $NODE_CONFIG
 mkdir -p $TERMUX_BOOT
 mkdir -p $TERMUX_SHORTCUTS
 mkdir -p $TERMUX_SCHEDULED
+mkdir -p $TOR_HS
+
 cd $MONERO
 ln  -sfT $TERMUX_SHORTCUTS widget\ scripts
 
@@ -66,7 +76,6 @@ then
 mv -u -n $NODE_CONFIG_OLD/* $NODE_CONFIG/
 rm -r $NODE_CONFIG_OLD
 fi
-
 
 # Detect External Storage by checking for creation of Termux external-1 folder
 SD=~/storage/external-1
@@ -122,7 +131,7 @@ Would you like to use INTERNAL Storage?" | jq '.text')
         	echo Using Internal Storage
         	else
         	echo  give me no choice but to exit 🛸
-		termux-wake-unlock
+        	termux-wake-unlock
         	exit 1
         	fi
 	else
@@ -163,42 +172,86 @@ cd $MONERO
 ln -sf $NODE_DATA -T blockchain
 ln -sf $NODE_CONFIG -T config
 
-cd $NODE_CONFIG
+# # TOR
+# Install TOR
+cd
+pkg install tor -y
+
+# Edit TOR config
+cd $NODE_CONFIG/..
+
+## Create TOR user config
+cat << EOF > torrc.txt
+## Tor Monero RPC HiddenService
+HiddenServiceDir $TOR_HS
+HiddenServicePort 18089 127.0.0.1:18089
+## Tor Monero P2P HiddenService
+HiddenServicePort 18084 127.0.0.1:18084
+AvoidDiskWrites 1
+RunAsDaemon 1
+EOF
+
+# Include additions in original torrc
+sed -i -z "s|#%include /etc/torrc.d/\*.conf|%include $NODE_CONFIG/../torrc.txt|g" $PREFIX/etc/tor/torrc
+
+# Start TOR
+tor
+sleep 2
+# Query Hidden services
+ONION=$(cat $TOR_HS/hostname)
+
 # Create Monerod Config file
+cd $NODE_CONFIG
  cat << EOF > config.default
 # Data directory (blockchain db and indices)
 	data-dir=$NODE_DATA
 
 # Log file
 	log-file=/dev/null
-	max-log-file-size=0       # Prevent monerod from creating log files
+	max-log-file-size=0		# Prevent monerod from creating log files
 
 #Peer ban list
 	#ban-list=$NODE_CONFIG/block.txt
 
 # block-sync-size=50
-	prune-blockchain=1             # 1 to prune
+	prune-blockchain=1		# 1 to prune
 
 # P2P (seeding) binds
-	p2p-bind-ip=0.0.0.0          # Bind to all interfaces. Default is local 127.0.0.1
-	p2p-bind-port=18080          # Bind to default port
+	p2p-bind-ip=127.0.0.1           # Bind to local interface. Default is local 127.0.0.1
+	# p2p-bind-port=18080		# Bind to default port
+
+# TOR P2P
+	anonymous-inbound=$ONION:18084,127.0.0.1:18084,64
+	proxy=127.0.0.1:9050		# Proxy through TOR
+	tx-proxy=tor,127.0.0.1:9050,64	# relay tx over tor
+
+# TOR Peers
+	# Trusted by nah.uhh
+	add-peer=qstotuswqshpfq3tk5ue6ngbx6rge3macsfa7qyt5j4caopixxhckpad.onion:18084
+	add-peer=xnmc66dvkqcxr5vo3svqbijqhru24ashrq4ljiz5vr2kpv6c7govhxqd.onion:18084
+	add-peer=idh6t6ez7p44hipb7yrt4a4tpsmb6sug6qvyjgynd5wkf2juljo5styd.onion:18084
+
+	add-priority-node=qstotuswqshpfq3tk5ue6ngbx6rge3macsfa7qyt5j4caopixxhckpad.onion:18084
+	add-priority-node=xnmc66dvkqcxr5vo3svqbijqhru24ashrq4ljiz5vr2kpv6c7govhxqd.onion:18084
+	add-priority-node=idh6t6ez7p44hipb7yrt4a4tpsmb6sug6qvyjgynd5wkf2juljo5styd.onion:18084
 
 # Restricted RPC binds (allow restricted access)
 # Uncomment below for access to the node from LAN/WAN. May require port forwarding for WAN access
 	rpc-restricted-bind-ip=0.0.0.0
-	rpc-restricted-bind-port=18089
+	rpc-restricted-bind-port=18089	# ensure port is closed on router/ firewall
 
 # Unrestricted RPC binds
-	rpc-bind-ip=127.0.0.1         # Bind to local interface. Default = 127.0.0.1
-	rpc-bind-port=18081           # Default = 18081
-	#confirm-external-bind=1       # Open node (confirm). Required if binding outside of localhost
-	#restricted-rpc=1              # Prevent unsafe RPC calls.
+	rpc-bind-ip=127.0.0.1		# Bind to local interface. Default = 127.0.0.1
+	rpc-bind-port=18081		# Default = 18081
+	#confirm-external-bind=1	# Open node (confirm). Required if binding outside of localhost
+	#restricted-rpc=1		# Prevent unsafe RPC calls.
 
 # Services
-	rpc-ssl=autodetect
-  	no-zmq=1
-	no-igd=1                         # Disable UPnP port mapping
-	db-sync-mode=safe                # Slow but reliable db writes
+	rpc-ssl=autodetect		# default = autodetect
+	#no-zmq=1			# 1 to close
+  	zmq-pub=tcp://127.0.0.1:18083	# enable p2pool
+	no-igd=1			# Disable UPnP port mapping
+	db-sync-mode=fast:async:1000000	# Switch to db-sync-mode=safe for slow but more reliable db writes
 
 # Emergency checkpoints set by MoneroPulse operators will be enforced to workaround potential consensus bugs
 # Check https://monerodocs.org/infrastructure/monero-pulse/ for explanation and trade-offs
@@ -208,11 +261,19 @@ cd $NODE_CONFIG
 
 
 # Connection Limits
-	out-peers=32              # This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
-	in-peers=32            # The default is unlimited; we prefer to put a cap on this
-	limit-rate-up=1048576     # 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
-	limit-rate-down=1048576   # 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
+	out-peers=64			# This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
+	in-peers=32			# The default is unlimited; we prefer to put a cap on this
+	limit-rate-up=1048576		# 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
+	limit-rate-down=1048576		# 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
 EOF
+
+# Dont add self as a peer
+sed -i -z "s|add-peer=$ONION|# add-peer=$ONION|g" config.default
+sed -i -z "s|add-priority-node=$ONION|# add-priority-node=$ONION|g" config.default
+
+# Stop TOR
+pkill tor
+sleep 1
 
 # Check for existing Config
 if [ -e config.txt ]
@@ -285,24 +346,28 @@ RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.
 	if [ \$RESP = '"Background"' ]
 	then
 	termux-wake-lock
-	cd $MONERO_CLI
-	./monerod --config-file $NODE_CONFIG/config.txt --detach
-	sleep 15
+	cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt --detach
+	tor
 	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
+	cd $NODE_CONFIG/..
+	cat $TOR_HS/hostname > HIDDEN_SERVICE.txt
+	cd
 	sleep 1
 	fi
 
 	if [ \$RESP = '"Foreground"' ]
 	then
 	termux-wake-lock
+	tor
 	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
-	cd $MONERO_CLI
-	sleep 1
-	./monerod --config-file $NODE_CONFIG/config.txt
+	sleep 3
+	cd $NODE_CONFIG/..
+	cat $TOR_HS/hostname > HIDDEN_SERVICE.txt
+	cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt
 fi
 exit 0
 
@@ -312,27 +377,30 @@ EOF
   cat << EOF > .Boot\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
 termux-wake-lock
-cd $MONERO_CLI
-./monerod --config-file $NODE_CONFIG/config.txt --detach
+cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt --detach
+cd
 sleep 15
+tor
 cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
+cd $NODE_CONFIG/..
+cat $TOR_HS/hostname > HIDDEN_SERVICE.txt
+cd
 sleep 1
 EOF
 
  cat << EOF > Stop\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
-cd $MONERO_CLI
-./monerod exit && tail --pid=\$(pidof monerod) -f /dev/null && echo 'Exited'
+cd $MONERO_CLI && ./monerod exit && tail --pid=\$(pidof monerod) -f /dev/null && echo 'Exited'
 rm -f $TERMUX_BOOT/Boot\ XMR\ Node
-
+pkill tor
 termux-wake-unlock
 termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low --alert-once
 termux-job-scheduler --cancel --job-id 1
 termux-job-scheduler --cancel --job-id 2
 sleep 1
-termux-toast -g middle "Stopped XMR Node"
+cd && termux-toast -g middle "Stopped XMR Node"
 
 EOF
 
@@ -363,7 +431,7 @@ termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired
 termux-toast -g middle -b black -c green Node Running! Check Notification.
 else
 NOTIFICATION="🟡 Connecting...Please wait 30s($LAST)"
-termux-notification -i monero -t "$NOTIFICATION" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "REFRESH STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
+termux-notification -i monero -t "$NOTIFICATION" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "REFRESH STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
 sleep 23
 termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000
 fi
@@ -381,15 +449,16 @@ DATA=$(echo $REQ | jq '.result')
 	SYNC_STATUS=$(printf %.1f $(echo "$DATA" | jq '(.height / .target_height)*100'))
 	STORAGE_REMAINING=$(printf %.1f $(echo "$DATA" | jq '.free_space * 0.000000001'))
 	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip') | tr -d '"')
+	TOR_RPC=$(cat ~/monero-cli/tor/HIDDEN_SERVICE.txt)
 
-	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: ${LOCAL_IP}:18089" "$UPDATE_AVAILABLE" )
+	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: ${LOCAL_IP}:18089" "🧅 Onion: Port 18089 - Tap to Copy Address" "$UPDATE_AVAILABLE" )
 
 else
 	STATUS="🔴 ERROR: Is your node running? ($LAST)"
 	NOTIFICATION="Refresh the notification.
 Otherwise, restart the node"
 fi
-termux-notification -i monero -c "$NOTIFICATION" -t "$STATUS ($LAST)" --ongoing --priority low --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "ACQUIRE WAKELOCK" --button2-action 'termux-wake-lock | termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000' --button3 "REFRESH STATUS" --button3-action 'bash -l -c termux-scheduled/GET_REFRESH'
+termux-notification -i monero -c "$NOTIFICATION" -t "$STATUS ($LAST)" --ongoing --priority low --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "ACQUIRE WAKELOCK" --button2-action 'termux-wake-lock | termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000' --button3 "REFRESH STATUS" --button3-action 'bash -l -c termux-scheduled/GET_REFRESH' --action 'cat ~/monero-cli/tor/HIDDEN_SERVICE.txt | termux-clipboard-set | termux-scheduled/GET_REFRESH'
 EOF
 
 
@@ -399,7 +468,7 @@ sed -i -z "s|sleep 7\n|sleep 7\ntermux-toast -g middle -b black Node Starting Up
 sed -i -z "s|sleep 7\n| \n|g" xmr_notifications_released
 cp xmr_notifications_released xmr_notifications_acquired
 sed -i -z "s|ACQUIRE |RELEASE |g" xmr_notifications_acquired
-sed -i -z "s|acquired|released|g" xmr_notifications_acquired 
+sed -i -z "s|acquired|released|g" xmr_notifications_acquired
 sed -i -z "s|termux-wake-lock|termux-wake-unlock|g" xmr_notifications_acquired
 sed -i -z "s|GET_REFRESH|xmr_notifications_acquired|g" xmr_notifications_acquired
 sed -i -z "s|GET_REFRESH|xmr_notifications_released|g" xmr_notifications_released
@@ -418,7 +487,6 @@ func_xmrnode_install(){
 	mv monero-a* $MONERO_CLI
 	cd $TERMUX_SHORTCUTS
 	sleep 1
-	termux-toast -g bottom "Starting XMR Node.."
 	./Start\ XMR\ Node
 }
 
@@ -519,25 +587,33 @@ cp .Boot\ XMR\ Node  $TERMUX_BOOT/Boot\ XMR\ Node
 mv xmr_notifications* $TERMUX_SCHEDULED
 cp Update\ XMR\ Node $TERMUX_SCHEDULED
 
+# Download Monero Software
 
-# Start
 cd $TERMUX_SHORTCUTS
 ./Stop\ XMR\ Node && echo "Monero Node Stopped"
 cd
+if [ -f $MONERO_CLI/monerod ]
+then
+echo Monerod is already downloaded. Skipping.
+else
 wget -c -O monero.tar.bzip2 $MONERO_CLI_URL
 tar jxvf monero.tar.bzip2
 rm monero.tar.bzip2
 rm -rf $MONERO_CLI
 mv monero-a* $MONERO_CLI
+fi
+
+# Start Node
 cd $TERMUX_SHORTCUTS
 ./.Boot\ XMR\ Node
 
+cd
 echo "I'm Done! 👍.
 ..."
 sleep 1
 echo "But.."
 sleep 1
-echo "	
+echo "
 	A couple things for you to do:
 
 1. Add the Termux:Widget to your homescreen
@@ -548,15 +624,13 @@ echo "
   - WiFi > edit saved network > advanced > DHCP
   - You'll need to change from "automatic" to "manual", and set the IP to:
     $(termux-wifi-connectioninfo | jq '.ip')
-4. To enable P2P seeding:
-  - Go to your router settings (usually 192.168.0.1 in your browser)
-    Find "Port Forwarding",and forward
-    "public/external" port 18080 to "internal/private" port 18080,
-    Setting the "internal/private" ip to:
-    $(termux-wifi-connectioninfo | jq '.ip')
-4b. To enable Wallet access from WAN:
-      - Forward port 18089 to 18089
-5.  The config file is located on your internal storage at
+3b. You will need to edit the config restricted-bind-ip
+    Change from 127.0.0.1 to the above IP.
+4.  The config file is located on your internal storage at
        	crypto/monero-cli/config
+
+Connect from the same device using 127.0.0.1 port 18081
+Connect from outside devices over TOR using $ONION port 18089
+
 	      ☠️ Cheers ☠️ "
 )
