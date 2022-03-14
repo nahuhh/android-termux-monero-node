@@ -178,7 +178,7 @@ cd
 pkg install tor -y
 
 # Edit TOR config
-cd $NODE_CONFIG/../tor
+cd $NODE_CONFIG/../
 
 ## Create TOR user config
 cat << EOF > torrc.txt
