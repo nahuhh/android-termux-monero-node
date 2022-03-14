@@ -458,7 +458,7 @@ else
 	NOTIFICATION="Refresh the notification.
 Otherwise, restart the node"
 fi
-termux-notification -i monero -c "$NOTIFICATION" -t "$STATUS ($LAST)" --ongoing --priority low --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "ACQUIRE WAKELOCK" --button2-action 'termux-wake-lock | termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000' --button3 "REFRESH STATUS" --button3-action 'bash -l -c termux-scheduled/GET_REFRESH' --action 'cat ~/monero-cli/tor/HIDDEN_SERVICE.txt | termux-clipboard-set | termux-scheduled/GET_REFRESH'
+termux-notification -i monero -c "$NOTIFICATION" -t "$STATUS ($LAST)" --ongoing --priority low --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "ACQUIRE WAKELOCK" --button2-action 'termux-wake-lock | termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000' --button3 "REFRESH STATUS" --button3-action 'bash -l -c termux-scheduled/GET_REFRESH' --action 'cat ~/monero-cli/tor/hidden_service/monero-rpc/hostname | termux-clipboard-set | termux-scheduled/GET_REFRESH'
 EOF
 
 
