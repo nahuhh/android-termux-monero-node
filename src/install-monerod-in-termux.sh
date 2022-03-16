@@ -249,7 +249,7 @@ cd $NODE_CONFIG
 # Services
 	rpc-ssl=autodetect		# default = autodetect
 	#no-zmq=1			# 1 to close
-  	zmq-pub=tcp://127.0.0.1:18083	# enable p2pool
+	zmq-pub=tcp://127.0.0.1:18083	# enable p2pool
 	no-igd=1			# Disable UPnP port mapping
 	db-sync-mode=fast:async:1000000	# Switch to db-sync-mode=safe for slow but more reliable db writes
 
@@ -268,8 +268,8 @@ cd $NODE_CONFIG
 EOF
 
 # Dont add self as a peer
-sed -i -z "s|add-peer=$ONION|# add-peer=$ONION|g" config.default
-sed -i -z "s|add-priority-node=$ONION|# add-priority-node=$ONION|g" config.default
+sed -i -z "s|add-peer=$ONION|#add-peer=$ONION|g" config.default
+sed -i -z "s|add-priority-node=$ONION|#add-priority-node=$ONION|g" config.default
 
 # Stop TOR
 pkill tor
@@ -627,7 +627,7 @@ echo "
 3b. You will need to edit the config restricted-bind-ip
     Change from 127.0.0.1 to the above IP.
 4.  The config file is located on your internal storage at
-       	crypto/monero-cli/config
+	crypto/monero-cli/config
 
 Connect from the same device using 127.0.0.1 port 18081
 Connect from outside devices over TOR using $ONION port 18089
