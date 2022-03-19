@@ -12,7 +12,7 @@ echo "#!/bin/bash
 chmod +x startp2pool
 nano startp2pool
 echo
-"
+'
 
 
 			To start p2pool, type:
@@ -21,4 +21,4 @@ echo
 			    ./startp2pool
 
 Tip: press tab to autofill  (type "./sta{tab}" etc) 
-"
+'
