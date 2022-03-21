@@ -70,6 +70,8 @@ ln  -sfT $TERMUX_SHORTCUTS widget\ scripts
 # Pre-Clean Old Setup
 rm -f $TERMUX_BOOT/before_start_monero_node
 rm -f $TERMUX_BOOT/*XMR\ Node*
+ # cancel additions in torrc
+sed -i -z "s|%include $NODE_CONFIG|#%include $NODE_CONFIG|g" $PREFIX/etc/tor/torrc
 NODE_CONFIG_OLD=~/monero-cli/config
 if [ -d $NODE_CONFIG_OLD ]
 then
@@ -182,17 +184,26 @@ cd $NODE_CONFIG/../
 
 ## Create TOR user config
 cat << EOF > torrc.txt
-## Tor Monero RPC HiddenService
+## Monero HiddenService
 HiddenServiceDir $TOR_HS
+## Monero // Restricted RPC // Wallet Access
 HiddenServicePort 18089 127.0.0.1:18089
-## Tor Monero P2P HiddenService
+## Monero // P2P // Node Peers
 HiddenServicePort 18084 127.0.0.1:18084
+## P2Pool Ports
+## P2Pool // Stratum Server // Mine on onion.
+## first, run TOR / InviZable / Orbot on mining device and
+## set socks in xmrig config to port 9050
+## set url to your.onion:3333
+## see https://xmrig.com/docs/miner/tor for more info.
+HiddenServicePort 3333 127.0.0.1:3333
+## P2Pool/mini P2P // Unknown if useful
+HiddenServicePort 37888 127.0.0.1:37888
+## P2Pool P2P // Unknown if useful
+HiddenServicePort 37889 127.0.0.1:37889
 AvoidDiskWrites 1
 RunAsDaemon 1
 EOF
-
-# Include additions in original torrc
-sed -i -z "s|#%include /etc/torrc.d/\*.conf|%include $NODE_CONFIG/../torrc.txt|g" $PREFIX/etc/tor/torrc
 
 # Start TOR
 tor
@@ -356,7 +367,7 @@ RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.
 	then
 	termux-wake-lock
 	cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt --detach
-	tor
+	tor -f $NODE_CONFIG/../torrc.txt
 	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
@@ -369,7 +380,7 @@ RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.
 	if [ \$RESP = '"Foreground"' ]
 	then
 	termux-wake-lock
-	tor
+	tor -f $NODE_CONFIG/../torrc.txt
 	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
@@ -389,7 +400,7 @@ termux-wake-lock
 cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt --detach
 cd
 sleep 15
-tor
+tor -f $NODE_CONFIG/../torrc.txt
 cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
