@@ -1,4 +1,3 @@
-GNU nano 5.4                                              bar
 #!/bin/bash
 # Check for existing install. Skip if necessary
 mkdir -p p2pool && cd p2pool
