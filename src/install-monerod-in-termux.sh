@@ -281,6 +281,7 @@ cd $NODE_CONFIG
 
 
 # Connection Limits
+	disable-rpc-ban=1
 	out-peers=64			# This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
 	in-peers=32			# The default is unlimited; we prefer to put a cap on this
 	limit-rate-up=1048576		# 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
