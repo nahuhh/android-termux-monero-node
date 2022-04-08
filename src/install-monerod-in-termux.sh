@@ -238,19 +238,11 @@ cd $NODE_CONFIG
 
 # TOR Onion Peers. Necessary to send transactions
 	# Trusted by nah.uhh
-	add-peer=qstotuswqshpfq3tk5ue6ngbx6rge3macsfa7qyt5j4caopixxhckpad.onion:18084
-	add-peer=xnmc66dvkqcxr5vo3svqbijqhru24ashrq4ljiz5vr2kpv6c7govhxqd.onion:18084
-	add-peer=idh6t6ez7p44hipb7yrt4a4tpsmb6sug6qvyjgynd5wkf2juljo5styd.onion:18084
-
 	add-priority-node=qstotuswqshpfq3tk5ue6ngbx6rge3macsfa7qyt5j4caopixxhckpad.onion:18084
 	add-priority-node=xnmc66dvkqcxr5vo3svqbijqhru24ashrq4ljiz5vr2kpv6c7govhxqd.onion:18084
 	add-priority-node=idh6t6ez7p44hipb7yrt4a4tpsmb6sug6qvyjgynd5wkf2juljo5styd.onion:18084
 
 # More peers from monerodocs.org. Tested as of 3/19/2022
-	add-peer=4egylyolrzsk6rskorqvocipdo4tqqoyzxnplbjorns7issmgpoxvtyd.onion:18083
-	add-peer=5nvd6jbefgto3u74nzzdkcsbqgxyzrkk7bz5qupsdqg4gbuj5valiaqd.onion:18083
-	add-peer=ozeavjybjbxbvmfcpxzjcn4zklbgohjwwndzenjt44pypvx6jisy74id.onion:18083
-
 	add-priority-node=4egylyolrzsk6rskorqvocipdo4tqqoyzxnplbjorns7issmgpoxvtyd.onion:18083
 	add-priority-node=5nvd6jbefgto3u74nzzdkcsbqgxyzrkk7bz5qupsdqg4gbuj5valiaqd.onion:18083
 	add-priority-node=ozeavjybjbxbvmfcpxzjcn4zklbgohjwwndzenjt44pypvx6jisy74id.onion:18083
@@ -289,7 +281,6 @@ cd $NODE_CONFIG
 EOF
 
 # Dont add self as a peer
-sed -i -z "s|add-peer=$ONION|#add-peer=$ONION|g" config.default
 sed -i -z "s|add-priority-node=$ONION|#add-priority-node=$ONION|g" config.default
 
 # Stop TOR
