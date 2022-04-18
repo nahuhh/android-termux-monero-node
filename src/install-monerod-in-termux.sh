@@ -31,6 +31,11 @@ else
 termux-setup-storage
 fi
 
+pkg upgrade -y
+apt install nano wget termux-api jq -y
+apt autoremove -y
+apt autoclean
+
 RESP=$(termux-dialog confirm -t "XMR Node" -i \
 "This script will install the latest Monero Node software on your device
 
@@ -49,10 +54,6 @@ fi
 
 termux-wake-lock
 sleep 1
-pkg update -y
-pkg install nano wget termux-api jq -y
-apt autoremove -y
-apt autoclean
 
 # Create Directories
 
