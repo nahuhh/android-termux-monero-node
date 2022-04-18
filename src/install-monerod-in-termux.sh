@@ -470,7 +470,6 @@ DATA=$(echo $REQ | jq '.result')
 	SYNC_STATUS=$(printf %.1f $(echo "$DATA" | jq '(.height / .target_height)*100'))
 	STORAGE_REMAINING=$(printf %.1f $(echo "$DATA" | jq '.free_space * 0.000000001'))
 	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip') | tr -d '"')
-	TOR_RPC=$(cat ~/monero-cli/tor/HIDDEN_SERVICE.txt)
 
 	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: ${LOCAL_IP}:18089" "🧅 Onion: Port 18089 - Tap to Copy Address" "$UPDATE_AVAILABLE" )
 
