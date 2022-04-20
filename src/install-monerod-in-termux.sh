@@ -24,7 +24,7 @@ esac
 
 
 # Preconfigure
-if [ -d storage/downloads ]
+if [ -d $HOME/storage/downloads ]
 then
 echo Storage already configured. Skipping.
 else
