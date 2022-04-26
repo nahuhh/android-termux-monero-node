@@ -25,7 +25,6 @@ cat << EOF > startp2pool
 --host 127.0.0.1 \
 --rpc-port 18081 \
 --stratum 0.0.0.0:3333 \
---loglevel 1 \
 --mini \
 --no-randomx \
 --wallet \
