@@ -207,7 +207,7 @@ RunAsDaemon 1
 EOF
 
 # Start TOR
-tor
+tor -f $NODE_CONFIG/../torrc.txt
 sleep 2
 # Query Hidden services
 ONION=$(cat $TOR_HS/hostname)
