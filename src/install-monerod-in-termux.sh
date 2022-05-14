@@ -615,13 +615,41 @@ cd $TERMUX_SHORTCUTS
 cd
 if [ -f $MONERO_CLI/monerod ]
 then
-echo Monerod is already downloaded. Skipping.
+	DOWNLOAD=$(termux-dialog confirm -t "Download Monerod" -i "Monerod already downloded. Update/Overwrite?"| jq '.text')
+	if [ "$DOWNLOAD" = '"yes"' ]
+       	then
+		BETA=$(termux-dialog radio -t "Which Version would you like to download?" -v "BETA,Stable" | jq '.text')
+		if [ "$BETA" = '"BETA"' ]
+		then
+		wget -c -O monero.tar.bz2 https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-5305a6367.tar.bz2
+		tar jxvf monero.tar.bz2
+		rm monero.tar.bz2
+		rm -rf $MONERO_CLI
+		mv monero-a* $MONERO_CLI
+		else
+		wget -c -O monero.tar.bz2 $MONERO_CLI_URL
+		tar jxvf monero.tar.bz2
+		rm monero.tar.bz2
+		rm -rf $MONERO_CLI
+		mv monero-a* $MONERO_CLI
+		fi
+	fi
 else
-wget -c -O monero.tar.bzip2 $MONERO_CLI_URL
-tar jxvf monero.tar.bzip2
-rm monero.tar.bzip2
-rm -rf $MONERO_CLI
-mv monero-a* $MONERO_CLI
+BETA=$(termux-dialog radio -t "Which Version would you like to download?" -v "BETA,Stable" | jq '.text')
+	if [ "$BETA" = '"BETA"' ]
+	then
+	wget -c -O monero.tar.bz2 https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-5305a6367.tar.bz2
+	tar jxvf monero.tar.bz2
+	rm monero.tar.bz2
+	rm -rf $MONERO_CLI
+	mv monero-a* $MONERO_CLI
+	else
+	wget -c -O monero.tar.bz2 $MONERO_CLI_URL
+	tar jxvf monero.tar.bz2
+	rm monero.tar.bz2
+	rm -rf $MONERO_CLI
+	mv monero-a* $MONERO_CLI
+	fi
 fi
 
 # Start Node
