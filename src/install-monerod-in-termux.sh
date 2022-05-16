@@ -185,6 +185,8 @@ cd $NODE_CONFIG/../
 
 ## Create TOR user config
 cat << EOF > torrc.txt
+## Avoid conflicting socks port
+SOCKSPort 9055
 ## Monero HiddenService
 HiddenServiceDir $TOR_HS
 ## Monero // Restricted RPC // Wallet Access
@@ -194,7 +196,7 @@ HiddenServicePort 18084 127.0.0.1:18084
 ## P2Pool Ports
 ## P2Pool // Stratum Server // Mine on onion.
 ## first, run TOR / InviZable / Orbot on mining device and
-## set socks in xmrig config to port 9050
+## set socks in xmrig config to port 9055
 ## set url to your.onion:3333
 ## see https://xmrig.com/docs/miner/tor for more info.
 HiddenServicePort 3333 127.0.0.1:3333
@@ -234,8 +236,8 @@ cd $NODE_CONFIG
 
 # TOR P2P
 	anonymous-inbound=$ONION:18084,127.0.0.1:18084,64
-	proxy=127.0.0.1:9050		# Proxy through TOR
-	tx-proxy=tor,127.0.0.1:9050,64	# relay tx over tor
+	proxy=127.0.0.1:9055		# Proxy through TOR
+	tx-proxy=tor,127.0.0.1:9055,64	# relay tx over tor
 
 # TOR Onion Peers. Necessary to send transactions
 	# Trusted by nah.uhh
