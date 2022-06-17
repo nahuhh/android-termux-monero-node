@@ -72,12 +72,12 @@ Steps:
 
      Go to:
      1. Android Settings > search for ”Special Access" 
-     2. Select "Battery Optimization" > All Apps
+     2. Select "Battery Optimization" or "Optimize battery usage" > All Apps
         Then disable battery optimization for
          - Termux
          - Termux:Boot
      3. Return to "Special Access" screen
-     4. Select "Draw over other apps"
+     4. Select "Draw over other apps" or "Appear on Top"
         Enable draw over apps aka draw on top for:
          - Termux 
 
