@@ -631,7 +631,7 @@ else
 BETA=$(termux-dialog radio -t "Which Version would you like to download?" -v "BETA,Stable" | jq '.text')
 	if [ "$BETA" = '"BETA"' ]
 	then
-	wget -c -O monero.tar.bz2 https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-5305a6367.tar.bz2
+	wget -c -O monero.tar.bz2 https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-7a58bb762.tar.bz2
 	tar jxvf monero.tar.bz2
 	rm monero.tar.bz2
 	rm -rf $MONERO_CLI
