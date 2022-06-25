@@ -1,14 +1,18 @@
 #!/bin/bash
-if [ ! -e p2pool/build/p2pool ]
+MONERO_CLI=~/monero-cli
+
+echo "Installing p2pool"
+if [ ! -e $MONERO_CLI/p2pool/build/p2pool ]
 then 
 pkg install git nano build-essential cmake libuv libzmq libcurl -y
+cd $MONERO_CLI
 git clone --recursive https://github.com/SChernykh/p2pool
 mkdir build && cd build
 cmake ..
 make
 cd
 else
-cd p2pool
+cd $MONERO_CLI/p2pool
 git pull
 cd build
 cmake ..
