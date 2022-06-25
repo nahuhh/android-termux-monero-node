@@ -340,12 +340,12 @@ PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb pr
 	if [ "$PRUNE" = '"Low Storage - Pruned Node     (64gb  minimum)"' ]
 	then
 	sed -i 's/prune-blockchain=0/prune-blockchain=1/g' config.txt
-	sed -i 's/#prune/prune/g' config.txt
+	sed -i 's/#sync-pruned/sync-pruned/g' config.txt
 	echo Running Pruned
 	elif [ "$PRUNE" = '"Recommended - Full Node     (256gb preferred)"' ]
 	then
 	sed -i 's/prune-blockchain=1/prune-blockchain=0/g' config.txt
-	sed -i 's/#prune/prune/g' config.txt
+	sed -i 's/sync-pruned/#sync-pruned/g' config.txt
 	echo Running Full Node 🎉
 	else
 	echo leaving as-is
