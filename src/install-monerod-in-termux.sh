@@ -333,7 +333,7 @@ PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb pr
 elif [ "$INTERNAL_FREE" -lt '150000000' ]
 then
 sed -i 's/prune-blockchain=0/prune-blockchain=1/g' config.txt
-sed -i 's/#prune/prune/g' config.txt
+sed -i 's/#sync-pruned/sync-pruned/g' config.txt
 echo Running Pruned
 else
 PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb preferred),Low Storage - Pruned Node     (64gb  minimum)" | jq '.text')
