@@ -11,7 +11,7 @@ TERMUX_SHORTCUTS=~/.shortcuts
 TERMUX_SCHEDULED=~/termux-scheduled
 TOR_HS=~/monero-cli/tor/hidden_service/monero-rpc
 MONERO_CLI_URL=""
-
+MONERO_BETA_URL=""
 AUTO_UPDATE=0
 
 # Detect Architecture
@@ -22,6 +22,13 @@ case $(uname -m) in
 	*) termux-toast -g bottom "Your device is not compatible- must be ARMv7 or v8"; exit 1 ;;
 esac
 
+# Detect Architecture for BETA
+
+case $(uname -m) in
+	arm | armv7l) MONERO_BETA_URL=https://github.com/nahuhh/monero/releases/download/master-beta/monero-arm-linux-android-7a58bb762.tar.bz2 ;;
+	aarch64_be | aarch64 | armv8b | armv8l) MONERO_BETA_URL=https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-7a58bb762.tar.bz2 ;;
+	*) termux-toast -g bottom "Your device is not compatible- must be ARMv7 or v8"; exit 1 ;;
+esac
 
 # Preconfigure
 if [ -d $HOME/storage/downloads ]
@@ -632,7 +639,7 @@ else
 BETA=$(termux-dialog radio -t "Which Version would you like to download?" -v "BETA,Stable" | jq '.text')
 	if [ "$BETA" = '"BETA"' ]
 	then
-	wget -c -O monero.tar.bz2 https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-7a58bb762.tar.bz2
+	wget -c -O monero.tar.bz2 $MONERO_BETA_URL
 	tar jxvf monero.tar.bz2
 	rm monero.tar.bz2
 	rm -rf $MONERO_CLI
