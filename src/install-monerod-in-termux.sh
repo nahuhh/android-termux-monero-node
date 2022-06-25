@@ -359,6 +359,16 @@ PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb pr
 	fi
 fi
 
+# P2Pool
+cd
+P2POOL=$(termux-dialog confirm -t "Install P2Pool?" -i "Would you like to install p2pool?" | jq '.text')
+if [ $P2POOL = '"yes"' ]
+then
+sh -c "$(curl -fsSL https://github.com/nahuhh/android-termux-monero-node/raw/master-beta-tor/src/installp2pool.sh)"
+else
+echo "Not installing P2Pool"
+fi
+
 # Create Scripts
 cd $TERMUX_SHORTCUTS
 
@@ -622,7 +632,7 @@ then
 		BETA=$(termux-dialog radio -t "Which Version would you like to download?" -v "BETA,Stable" | jq '.text')
 		if [ "$BETA" = '"BETA"' ]
 		then
-		wget -c -O monero.tar.bz2 https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-5305a6367.tar.bz2
+		wget -c -O monero.tar.bz2 $MONERO_BETA_URL
 		tar jxvf monero.tar.bz2
 		rm monero.tar.bz2
 		rm -rf $MONERO_CLI
