@@ -1,43 +1,44 @@
 #!/bin/bash
-# Check for existing install. Skip if necessary
-mkdir -p p2pool && cd p2pool
-if [ ! -e p2pool-v1.9.tar.gz ]
-then
-apt install wget nano -y
-wget -O p2pool-v1.9.tar.gz https://github.com/SChernykh/p2pool/releases/download/v1.9/p2pool-v1.9-linux-aarch64.tar.gz
-tar --one-top-level=p2pool-v1.9/ --strip-components=1 --keep-newer-files -xvf p2pool-v1.9.tar.gz
-else
-echo P2Pool is already installed
-fi
+if [ ! -e p2pool/build/p2pool ]
+then 
+pkg install git nano build-essential cmake libuv libzmq libcurl -y
+git clone --recursive https://github.com/SChernykh/p2pool
+mkdir build && cd build
+cmake ..
+make
 cd
-
+else
+cd p2pool
+git pull
+cd build
+cmake ..
+make
+cd
+fi
 # Input user wallet address
 echo "
-
-Tap & Hold to paste your Monero address."
+1. Copy your Main (4xxx..) address
+2. Tap & Hold to paste
+3. Press enter to confirm"
 ADDRESS="USER INPUT"
 read -p "Wallet Address: " ADDRESS
 
 # Create start script
-cat << EOF > startp2pool
+cat << EOF > Start\ P2Pool
 #!/bin/bash
-./p2pool/p2pool-v1.9/p2pool \
+./p2pool/build/p2pool \
 --host 127.0.0.1 \
 --rpc-port 18081 \
 --stratum 0.0.0.0:3333 \
 --mini \
 --no-randomx \
+--no-autodiff \
 --wallet \
 $ADDRESS
 EOF
 
 # Finish up
-chmod +x startp2pool
-echo
-'
-
-
-			To start p2pool, type:
-
-
-			    ./startp2pool'
+chmod +x Start\ P2Pool
+mv Start\ P2Pool .shortcuts/
+echo "P2Pool install finished"
+sleep 1
