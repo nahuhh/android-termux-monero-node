@@ -32,7 +32,7 @@ read -p "Wallet Address: " ADDRESS
 cat << EOF > Start\ P2Pool
 #!/bin/bash
 cd
-.$MONERO_CLI/p2pool/build/p2pool \
+./monero-cli/p2pool/build/p2pool \
 --host 127.0.0.1 \
 --rpc-port 18081 \
 --stratum 0.0.0.0:3333 \
