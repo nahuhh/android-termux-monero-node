@@ -1,4 +1,5 @@
 #!/bin/bash
+rm -rf p2pool/build
 if [ ! -e monero-cli/p2pool/p2pool ]
 then 
 pkg install git nano build-essential cmake libuv libzmq libcurl -y
