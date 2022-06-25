@@ -10,7 +10,7 @@ TERMUX_BOOT=~/.termux/boot
 TERMUX_SHORTCUTS=~/.shortcuts
 TERMUX_SCHEDULED=~/termux-scheduled
 MONERO_CLI_URL=""
-
+MONERO_BETA_URL=""
 AUTO_UPDATE=0
 
 # Detect Architecture
@@ -21,6 +21,13 @@ case $(uname -m) in
 	*) termux-toast -g bottom "Your device is not compatible- must be ARMv7 or v8"; exit 1 ;;
 esac
 
+# Detect Architecture for BETA
+
+case $(uname -m) in
+	arm | armv7l) MONERO_BETA_URL=https://github.com/nahuhh/monero/releases/download/master-beta/monero-arm-linux-android-7a58bb762.tar.bz2 ;;
+	aarch64_be | aarch64 | armv8b | armv8l) MONERO_BETA_URL=https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-7a58bb762.tar.bz2 ;;
+	*) termux-toast -g bottom "Your device is not compatible- must be ARMv7 or v8"; exit 1 ;;
+esac
 
 # Preconfigure
 if [ -d $HOME/storage/downloads ]
@@ -204,10 +211,11 @@ cd $NODE_CONFIG
 	#restricted-rpc=1             # Prevent unsafe RPC calls.
 
 # Services
-	rpc-ssl=autodetect
-  	no-zmq=1
-	no-igd=1                            # Disable UPnP port mapping
-	db-sync-mode=fast:async:1000000     # Switch to db-sync-mode=safe for slow but more reliable db writes
+	rpc-ssl=autodetect		# default = autodetect
+	#no-zmq=1			# 1 to close
+	zmq-pub=tcp://127.0.0.1:18083	# enable p2pool
+	no-igd=1			# Disable UPnP port mapping
+	db-sync-mode=fast:async:1000000	# Switch to db-sync-mode=safe for slow but more reliable db writes
 
 # Emergency checkpoints set by MoneroPulse operators will be enforced to workaround potential consensus bugs
 # Check https://monerodocs.org/infrastructure/monero-pulse/ for explanation and trade-offs
@@ -227,7 +235,7 @@ EOF
 if [ -e config.txt ]
 then
 	DEL=$(termux-dialog radio -t "Existing configuration found" -v "Update,Keep Existing" | jq '.text')
-	if [ "$DEL" != '"Update"' ]
+	if [ "$DEL" = '"Keep Existing"' ]
 	then
 	echo "Keep existing config file.\n   Updating data-dir flag"
 	cp config.txt config.old
@@ -282,6 +290,16 @@ PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb pr
 	else
 	echo leaving as-is
 	fi
+fi
+
+# P2Pool
+cd
+P2POOL=$(termux-dialog confirm -t "Install P2Pool?" -i "Would you like to install p2pool?" | jq '.text')
+if [ $P2POOL = '"yes"' ]
+then
+sh -c "$(curl -fsSL https://github.com/nahuhh/android-termux-monero-node/raw/master-beta-tor/src/installp2pool.sh)"
+else
+echo "Not installing P2Pool"
 fi
 
 # Create Scripts
@@ -541,7 +559,7 @@ then
 		BETA=$(termux-dialog radio -t "Which Version would you like to download?" -v "BETA,Stable" | jq '.text')
 		if [ "$BETA" = '"BETA"' ]
 		then
-		wget -c -O monero.tar.bz2 https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-5305a6367.tar.bz2
+		wget -c -O monero.tar.bz2 $MONERO_BETA_URL
 		tar jxvf monero.tar.bz2
 		rm monero.tar.bz2
 		rm -rf $MONERO_CLI
@@ -558,7 +576,7 @@ else
 BETA=$(termux-dialog radio -t "Which Version would you like to download?" -v "BETA,Stable" | jq '.text')
 	if [ "$BETA" = '"BETA"' ]
 	then
-	wget -c -O monero.tar.bz2 https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-7a58bb762.tar.bz2
+	wget -c -O monero.tar.bz2 $MONERO_BETA_URL
 	tar jxvf monero.tar.bz2
 	rm monero.tar.bz2
 	rm -rf $MONERO_CLI
@@ -583,23 +601,36 @@ sleep 1
 echo "	
 	A couple things for you to do:
 
-1. Add the Termux:Widget to your homescreen
-2. To run the node automatically @ boot:
+Basic:
+1.  Add the Termux:Widget to your homescreen
+2.  To run the node automatically @ boot:
     Install Termux:Boot from F-Droid and run it once.
-3. To set a static IP to enable LAN access:
+
+Networking:
+3. Static IP to enable LAN access:
     From Android Settings, go to:
   - WiFi > edit saved network > advanced > DHCP
   - You'll need to change from "automatic" to "manual", and set the IP to:
     $(termux-wifi-connectioninfo | jq '.ip')
-4. To enable P2P seeding:
+4. Port Forwarding:
   - Go to your router settings (usually 192.168.0.1 in your browser)
-    Find "Port Forwarding",and forward
-    "public/external" port 18080 to "internal/private" port 18080,
+    Find "Port Forwarding"
+  P2P Seeding:
+    Forward "public/external" port 18080 to "internal/private" port 18080,
     Setting the "internal/private" ip to:
     $(termux-wifi-connectioninfo | jq '.ip')
-4b. To enable Wallet access from WAN:
-      - Forward port 18089 to 18089
-5.  The config file is located on your internal storage at
-       	crypto/monero-cli/config
+  P2Pool:
+    Forward port 3333 to port 3333,
+    Start p2pool from the widget
+    Point miners at ip:3333
+  Wallet:
+    Forward port 18089 to port 18089
+
+
+5. Config:
+  The config file is located on your internal storage at
+         crypto/monero-cli/config
+
+  
 	      ☠️ Cheers ☠️ "
 )
