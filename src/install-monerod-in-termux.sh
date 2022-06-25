@@ -227,8 +227,9 @@ cd $NODE_CONFIG
 #Peer ban list
 	#ban-list=$NODE_CONFIG/block.txt
 
-# block-sync-size=50
+	#block-sync-size=50
 	prune-blockchain=1		# 1 to prune
+	sync-pruned-blocks=1
 
 # P2P (seeding) binds
 	p2p-bind-ip=127.0.0.1           # Bind to local interface. Default is local 127.0.0.1
@@ -272,12 +273,12 @@ cd $NODE_CONFIG
 # Check https://monerodocs.org/infrastructure/monero-pulse/ for explanation and trade-offs
 	#enforce-dns-checkpointing=1
 	disable-dns-checkpoints=1
-	enable-dns-blocklist=1
+	#enable-dns-blocklist=1
 
 
 # Connection Limits
 	disable-rpc-ban=1
-	out-peers=64			# This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
+	out-peers=32			# This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
 	in-peers=32			# The default is unlimited; we prefer to put a cap on this
 	limit-rate-up=1048576		# 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
 	limit-rate-down=1048576		# 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
@@ -319,12 +320,12 @@ PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb pr
 	if [ "$PRUNE" = '"Low Storage - Pruned Node     (64gb  minimum)"' ]
 	then
 	sed -i 's/prune-blockchain=0/prune-blockchain=1/g' config.txt
-	sed -i 's/#prune/prune/g' config.txt
+	sed -i 's/#sync-pruned/sync-pruned/g' config.txt
 	echo Running Pruned
 	elif [ "$PRUNE" = '"Recommended - Full Node     (256gb preferred)"' ]
 	then
 	sed -i 's/prune-blockchain=1/prune-blockchain=0/g' config.txt
-	sed -i 's/#prune/prune/g' config.txt
+	sed -i 's/sync-pruned/#sync-pruned/g' config.txt
 	echo Running Full Node 🎉
 	else
 	echo leaving as-is
