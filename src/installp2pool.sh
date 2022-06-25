@@ -4,6 +4,7 @@ if [ ! -e monero-cli/p2pool/p2pool ]
 then 
 pkg install git nano build-essential cmake libuv libzmq libcurl -y
 git clone --recursive https://github.com/SChernykh/p2pool
+cd p2pool
 mkdir build && cd build
 cmake ..
 make
