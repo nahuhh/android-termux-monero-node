@@ -186,6 +186,7 @@ cd $NODE_CONFIG
 
 # block-sync-size=50
 	prune-blockchain=1            # 1 to prune
+	sync-pruned-blocks=1
 
 # P2P (seeding) binds
 	p2p-bind-ip=0.0.0.0           # Bind to all interfaces. Default is local 127.0.0.1
@@ -251,12 +252,12 @@ PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb pr
 	if [ "$PRUNE" = '"Low Storage - Pruned Node     (64gb  minimum)"' ]
 	then
 	sed -i 's/prune-blockchain=0/prune-blockchain=1/g' config.txt
-	sed -i 's/#prune/prune/g' config.txt
+	sed -i 's/#sync-pruned/sync-pruned/g' config.txt
 	echo Running Pruned
 	elif [ "$PRUNE" = '"Recommended - Full Node     (256gb preferred)"' ]
 	then
 	sed -i 's/prune-blockchain=1/prune-blockchain=0/g' config.txt
-	sed -i 's/#prune/prune/g' config.txt
+	sed -i 's/sync-pruned/#sync-pruned/g' config.txt
 	echo Running Full Node 🎉
 	else
 	echo leaving as-is
@@ -264,19 +265,19 @@ PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb pr
 elif [ "$INTERNAL_FREE" -lt '150000000' ]
 then
 sed -i 's/prune-blockchain=0/prune-blockchain=1/g' config.txt
-sed -i 's/#prune/prune/g' config.txt
+sed -i 's/#sync-pruned/sync-pruned/g' config.txt
 echo Running Pruned
 else
 PRUNE=$(termux-dialog radio -t "Run a" -v "Recommended - Full Node     (256gb preferred),Low Storage - Pruned Node     (64gb  minimum)" | jq '.text')
 	if [ "$PRUNE" = '"Low Storage - Pruned Node     (64gb  minimum)"' ]
 	then
 	sed -i 's/prune-blockchain=0/prune-blockchain=1/g' config.txt
-	sed -i 's/#prune/prune/g' config.txt
+	sed -i 's/#sync-pruned/sync-pruned/g' config.txt
 	echo Running Pruned
 	elif [ "$PRUNE" = '"Recommended - Full Node     (256gb preferred)"' ]
 	then
 	sed -i 's/prune-blockchain=1/prune-blockchain=0/g' config.txt
-	sed -i 's/#prune/prune/g' config.txt
+	sed -i 's/sync-pruned/#sync-pruned/g' config.txt
 	echo Running Full Node 🎉
 	else
 	echo leaving as-is
