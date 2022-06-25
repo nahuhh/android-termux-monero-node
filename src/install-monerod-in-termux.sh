@@ -651,10 +651,10 @@ cd $TERMUX_SHORTCUTS
 ./.Boot\ XMR\ Node
 
 cd
-echo "I'm Done! 👍.
+echo "Finished! 👍.
 ..."
 sleep 1
-echo "But.."
+echo "The node is running in the background"
 sleep 1
 echo "
 	A couple things for you to do:
@@ -662,14 +662,13 @@ echo "
 1. Add the Termux:Widget to your homescreen
 2. To run the node automatically @ boot:
     Install Termux:Boot from F-Droid and run it once.
-3. To set a static IP to enable LAN access:
+3. To set a static IP to ensure LAN access:
     From Android Settings, go to:
   - WiFi > edit saved network > advanced > DHCP
   - You'll need to change from "automatic" to "manual", and set the IP to:
     $(termux-wifi-connectioninfo | jq '.ip')
-3b. You will need to edit the config restricted-bind-ip
-    Change from 127.0.0.1 to the above IP.
-4.  The config file is located on your internal storage at
+
+Your config file is located on your internal storage at
 	crypto/monero-cli/config
 
 Connect from the same device using 127.0.0.1 port 18081
