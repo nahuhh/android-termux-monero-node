@@ -7,6 +7,7 @@ mkdir build && cd build
 cmake ..
 make
 cd
+rm -rf monero-cli/p2pool
 else
 cd p2pool
 git pull
@@ -14,6 +15,7 @@ cd build
 cmake ..
 make
 cd
+rm -rf monero-cli/p2pool
 fi
 
 mv p2pool/build monero-cli/p2pool
