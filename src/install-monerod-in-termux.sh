@@ -234,7 +234,7 @@ EOF
 # Check for existing Config
 if [ -e config.txt ]
 then
-	DEL=$(termux-dialog radio -t "Existing configuration found" -v "Update,Keep Existing" | jq '.text')
+	DEL=$(termux-dialog radio -t "Existing configuration found" -v "Keep Existing,Update (Recommended)" | jq '.text')
 	if [ "$DEL" = '"Keep Existing"' ]
 	then
 	echo "Keep existing config file.\n   Updating data-dir flag"
