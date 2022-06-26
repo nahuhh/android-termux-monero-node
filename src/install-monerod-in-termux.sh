@@ -481,7 +481,7 @@ DATA=$(echo $REQ | jq '.result')
 	UPDATE_AVAILABLE=$(echo "$DATA" | jq -r 'if .update_available == true then "📬️ XMR Update Available" else "" end' )
 	SYNC_STATUS=$(printf %.1f $(echo "$DATA" | jq '(.height / .target_height)*100'))
 	STORAGE_REMAINING=$(printf %.1f $(echo "$DATA" | jq '.free_space * 0.000000001'))
-	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip') | tr -d '"')
+	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip'):18089 | tr -d '"')
 
 	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: ${LOCAL_IP}:18089" "🧅 Onion: Port 18089 - Tap to Copy Address" "$UPDATE_AVAILABLE" )
 
@@ -675,16 +675,33 @@ echo "The node is running in the background"
 sleep 1
 echo "
 	A couple things for you to do:
-
+Basic:
 1. Add the Termux:Widget to your homescreen
 2. To run the node automatically @ boot:
-    Install Termux:Boot from F-Droid and run it once.
-3. To set a static IP to ensure LAN access:
+   Install Termux:Boot from F-Droid and run it once.
+Networking:
+3. Static IP to enable LAN access:
     From Android Settings, go to:
   - WiFi > edit saved network > advanced > DHCP
   - You'll need to change from "automatic" to "manual", and set the IP to:
-    $(termux-wifi-connectioninfo | jq '.ip')
-
+    $(termux-wifi-connectioninfo | jq -r '.ip')
+4. Port Forwarding:
+    Not required
+5. Connections:
+  P2Pool:
+    Start P2Pool from the widget
+  - Onion:
+    ./xmrig -o $ONION:3333 -x 9050
+  - LAN:
+    ./xmrig -o $(termux-wifi-connectioninfo | jq -r '.ip'):3333
+  Wallet:
+  - Onion:
+    $ONION
+  - LAN:
+    $(termux-wifi-connectioninfo | jq -r '.ip')
+  - Port:
+    18089
+    
 Your config file is located on your internal storage at
 	crypto/monero-cli/config
 
