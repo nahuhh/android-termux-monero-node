@@ -286,7 +286,7 @@ cd $NODE_CONFIG
 # Connection Limits
 	disable-rpc-ban=1
 	out-peers=32			# This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
-	in-peers=32			# The default is unlimited; we prefer to put a cap on this
+	in-peers=0			# The default is unlimited; we prefer to put a cap on this
 	limit-rate-up=1048576		# 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
 	limit-rate-down=1048576		# 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
 EOF
@@ -361,8 +361,8 @@ fi
 
 # P2Pool
 cd
-P2POOL=$(termux-dialog confirm -t "Install P2Pool?" -i "Would you like to install p2pool?" | jq '.text')
-if [ $P2POOL = '"yes"' ]
+P2POOL=$(termux-dialog confirm -t "Install P2Pool?" -i "Would you like to install p2pool? (Clearnet)" | jq -r '.text')
+if [ $P2POOL = 'yes' ]
 then
 sh -c "$(curl -fsSL https://github.com/nahuhh/android-termux-monero-node/raw/master-beta-tor/src/installp2pool.sh)"
 else
