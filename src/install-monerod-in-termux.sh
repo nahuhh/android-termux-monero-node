@@ -294,8 +294,8 @@ fi
 
 # P2Pool
 cd
-P2POOL=$(termux-dialog confirm -t "Install P2Pool?" -i "Would you like to install p2pool?" | jq '.text')
-if [ $P2POOL = '"yes"' ]
+P2POOL=$(termux-dialog confirm -t "Install P2Pool?" -i "Would you like to install p2pool?" | jq -r '.text')
+if [ $P2POOL = 'yes' ]
 then
 sh -c "$(curl -fsSL https://github.com/nahuhh/android-termux-monero-node/raw/master-beta-tor/src/installp2pool.sh)"
 else
@@ -611,21 +611,29 @@ Networking:
     From Android Settings, go to:
   - WiFi > edit saved network > advanced > DHCP
   - You'll need to change from "automatic" to "manual", and set the IP to:
-    $(termux-wifi-connectioninfo | jq '.ip')
+    $(termux-wifi-connectioninfo | jq -r '.ip')
 4. Port Forwarding:
   - Go to your router settings (usually 192.168.0.1 in your browser)
     Find "Port Forwarding"
   P2P Seeding:
     Forward "public/external" port 18080 to "internal/private" port 18080,
     Setting the "internal/private" ip to:
-    $(termux-wifi-connectioninfo | jq '.ip')
+    $(termux-wifi-connectioninfo | jq -r '.ip')
   P2Pool:
     Forward port 3333 to port 3333,
     Start p2pool from the widget
-    Point miners at ip:3333
+    Start LAN miners with: 
+    ./xmrig -o $(termux-wifi-connectioninfo | jq -r '.ip'):3333
   Wallet:
-    Forward port 18089 to port 18089
-
+  - Onion:
+     $ONION
+  - LAN:
+     $(termux-wifi-connectioninfo | jq -r '.ip')
+  - WAN:
+    Forward 18089.
+    Find you public IP by searching duckduckgo
+  - Port:
+    18089
 
 5. Config:
   The config file is located on your internal storage at
