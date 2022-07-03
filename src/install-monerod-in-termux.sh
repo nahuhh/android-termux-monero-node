@@ -407,9 +407,9 @@ DATA=$(echo $REQ | jq '.result')
 	UPDATE_AVAILABLE=$(echo "$DATA" | jq -r 'if .update_available == true then "📬️ XMR Update Available" else "" end' )
 	SYNC_STATUS=$(printf %.1f $(echo "$DATA" | jq 'if .target_height < .height then 100 else (.height / .target_height * 100)end'))
 	STORAGE_REMAINING=$(printf %.1f $(echo "$DATA" | jq '.free_space * 0.000000001'))
-	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip') | tr -d '"')
+	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip'):18089 | tr -d '"')
 
-	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: ${LOCAL_IP}:18089" "$UPDATE_AVAILABLE" )
+	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: $LOCAL_IP" "$UPDATE_AVAILABLE" )
 
 else
 	STATUS="🔴 ERROR: Is your node running? ($LAST)"
