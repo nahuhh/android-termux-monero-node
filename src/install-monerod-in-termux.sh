@@ -379,25 +379,25 @@ RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.
 	if [ \$RESP = '"Background"' ]
 	then
 	termux-wake-lock
-	cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt --detach
 	tor -f $NODE_CONFIG/../torrc.txt
+	sleep 5
+	cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt --detach
 	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
 	cd $NODE_CONFIG/..
 	cat $TOR_HS/hostname > HIDDEN_SERVICE.txt
 	cd
-	sleep 1
 	fi
 
 	if [ \$RESP = '"Foreground"' ]
 	then
 	termux-wake-lock
 	tor -f $NODE_CONFIG/../torrc.txt
+	sleep 5
 	cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
-	sleep 3
 	cd $NODE_CONFIG/..
 	cat $TOR_HS/hostname > HIDDEN_SERVICE.txt
 	cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt
@@ -410,17 +410,15 @@ EOF
   cat << EOF > .Boot\ XMR\ Node
 #!/data/data/com.termux/files/usr/bin/sh
 termux-wake-lock
-cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt --detach
-cd
-sleep 15
 tor -f $NODE_CONFIG/../torrc.txt
+sleep 5
+cd $MONERO_CLI && ./monerod --config-file $NODE_CONFIG/config.txt --detach
 cp $TERMUX_SHORTCUTS/.Boot\ XMR\ Node $TERMUX_BOOT/Boot\ XMR\ Node
 termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
 cd $NODE_CONFIG/..
 cat $TOR_HS/hostname > HIDDEN_SERVICE.txt
 cd
-sleep 1
 EOF
 
  cat << EOF > Stop\ XMR\ Node
@@ -460,6 +458,9 @@ EOF
 cp xmr_notifications xmr_notifications_released
 
 cat << 'EOF' >> xmr_notifications
+NOTIFICATION="🟢 Loading...Please wait 10s($LAST)"
+termux-notification -i monero -c "$NOTIFICATION" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "REFRESH STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
+sleep 3
 termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000
 termux-toast -g middle -b black -c green Node Running! Check Notification.
 else
@@ -479,7 +480,7 @@ DATA=$(echo $REQ | jq '.result')
 	P2P_CONNECTIONS=$(echo "$DATA" | jq '.incoming_connections_count' )
 	RPC_CONNECTIONS=$(echo "$DATA" | jq '.rpc_connections_count' )
 	UPDATE_AVAILABLE=$(echo "$DATA" | jq -r 'if .update_available == true then "📬️ XMR Update Available" else "" end' )
-	SYNC_STATUS=$(printf %.1f $(echo "$DATA" | jq '(.height / .target_height)*100'))
+	SYNC_STATUS=$(printf %.1f $(echo "$DATA" | jq 'if .target_height < .height then 100 else (.height / .target_height * 100)end'))
 	STORAGE_REMAINING=$(printf %.1f $(echo "$DATA" | jq '.free_space * 0.000000001'))
 	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip'):18089 | tr -d '"')
 
