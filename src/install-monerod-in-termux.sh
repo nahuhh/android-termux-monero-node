@@ -484,7 +484,7 @@ DATA=$(echo $REQ | jq '.result')
 	STORAGE_REMAINING=$(printf %.1f $(echo "$DATA" | jq '.free_space * 0.000000001'))
 	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip'):18089 | tr -d '"')
 
-	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: ${LOCAL_IP}:18089" "🧅 Onion: Port 18089 - Tap to Copy Address" "$UPDATE_AVAILABLE" )
+	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: $LOCAL_IP" "🧅 Onion: Port 18089 - Tap to Copy Address" "$UPDATE_AVAILABLE" )
 
 else
 	STATUS="🔴 ERROR: Is your node running? ($LAST)"
