@@ -208,9 +208,9 @@ HiddenServicePort 18084 127.0.0.1:18084
 ## see https://xmrig.com/docs/miner/tor for more info.
 HiddenServicePort 3333 127.0.0.1:3333
 ## P2Pool/mini P2P // Unknown if useful
-HiddenServicePort 37888 127.0.0.1:37888
+#HiddenServicePort 37888 127.0.0.1:37888
 ## P2Pool P2P // Unknown if useful
-HiddenServicePort 37889 127.0.0.1:37889
+#HiddenServicePort 37889 127.0.0.1:37889
 AvoidDiskWrites 1
 RunAsDaemon 1
 EOF
@@ -234,18 +234,23 @@ cd $NODE_CONFIG
 #Peer ban list
 	#ban-list=$NODE_CONFIG/block.txt
 
-	#block-sync-size=50
-	prune-blockchain=1		# 1 to prune
-	sync-pruned-blocks=1
+# Database management
+	#block-sync-size=50		 # default 0
+	prune-blockchain=1		 # 1 to prune
+	sync-pruned-blocks=1		 # Sync already pruned blocks
+	db-sync-mode=fast:async:25000000 # Switch to db-sync-mode=safe for slow but more reliable db writes
+	block-download-max-size=90000000 # max cache of 90mb
+	max-concurrency=2		 # Max threads. Avoid overheating (default 4)
 
 # P2P (seeding) binds
 	p2p-bind-ip=127.0.0.1           # Bind to local interface. Default is local 127.0.0.1
 	# p2p-bind-port=18080		# Bind to default port
 
 # TOR P2P
-	anonymous-inbound=$ONION:18084,127.0.0.1:18084,64
+	anonymous-inbound=$ONION:18084,127.0.0.1:18084,32
 	proxy=127.0.0.1:9055		# Proxy through TOR
-	tx-proxy=tor,127.0.0.1:9055,64	# relay tx over tor
+	tx-proxy=tor,127.0.0.1:9055,16	# relay tx over tor
+	pad-transactions=1
 
 # TOR Onion Peers. Necessary to send transactions
 	# Trusted by nah.uhh
@@ -274,19 +279,18 @@ cd $NODE_CONFIG
 	#no-zmq=1			# 1 to close
 	zmq-pub=tcp://127.0.0.1:18083	# enable p2pool
 	no-igd=1			# Disable UPnP port mapping
-	db-sync-mode=fast:async:1000000	# Switch to db-sync-mode=safe for slow but more reliable db writes
 
 # Emergency checkpoints set by MoneroPulse operators will be enforced to workaround potential consensus bugs
 # Check https://monerodocs.org/infrastructure/monero-pulse/ for explanation and trade-offs
 	#enforce-dns-checkpointing=1
 	disable-dns-checkpoints=1
 	#enable-dns-blocklist=1
-
+	check-updates=disabled
 
 # Connection Limits
 	disable-rpc-ban=1
-	out-peers=32			# This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
-	in-peers=0			# The default is unlimited; we prefer to put a cap on this
+	out-peers=24			# This will enable much faster sync and tx awareness; the default 8 is suboptimal nowadays
+	in-peers=0			# No incoming ipv4 over tor. The default is unlimited; we prefer to put a cap on this
 	limit-rate-up=1048576		# 1048576 kB/s == 1GB/s; a raise from default 2048 kB/s; contribute more to p2p network
 	limit-rate-down=1048576		# 1048576 kB/s == 1GB/s; a raise from default 8192 kB/s; allow for faster initial sync
 EOF
