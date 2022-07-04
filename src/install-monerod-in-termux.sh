@@ -191,9 +191,13 @@ cd $NODE_CONFIG
 #Peer ban list
 	#ban-list=$NODE_CONFIG/block.txt
 
-# block-sync-size=50
-	prune-blockchain=1            # 1 to prune
-	sync-pruned-blocks=1
+# Database management
+	#block-sync-size=50		 # default 0
+	prune-blockchain=1		 # 1 to prune
+	sync-pruned-blocks=1		 # Sync already pruned blocks
+	db-sync-mode=fast:async:25000000 # Switch to db-sync-mode=safe for slow but more reliable db writes
+	block-download-max-size=90000000 # max cache of 90mb
+	max-concurrency=2
 
 # P2P (seeding) binds
 	p2p-bind-ip=0.0.0.0           # Bind to all interfaces. Default is local 127.0.0.1
@@ -215,7 +219,6 @@ cd $NODE_CONFIG
 	#no-zmq=1			# 1 to close
 	zmq-pub=tcp://127.0.0.1:18083	# enable p2pool
 	no-igd=1			# Disable UPnP port mapping
-	db-sync-mode=fast:async:1000000	# Switch to db-sync-mode=safe for slow but more reliable db writes
 
 # Emergency checkpoints set by MoneroPulse operators will be enforced to workaround potential consensus bugs
 # Check https://monerodocs.org/infrastructure/monero-pulse/ for explanation and trade-offs
@@ -328,7 +331,6 @@ RESP=\$(termux-dialog radio -t "Run Node in:" -v "Background,Foreground" | jq '.
 	termux-job-scheduler --job-id 1 -s $TERMUX_SCHEDULED/xmr_notifications
 	termux-job-scheduler --job-id 2 -s $TERMUX_SCHEDULED/Update\ XMR\ Node --period-ms 86400000
 	cd $MONERO_CLI
-	sleep 1
 	./monerod --config-file $NODE_CONFIG/config.txt
 fi
 exit 0
@@ -386,6 +388,9 @@ EOF
 cp xmr_notifications xmr_notifications_released
 
 cat << 'EOF' >> xmr_notifications
+NOTIFICATION="🟢 Loading...Please wait 10s($LAST)"
+termux-notification -i monero -c "$NOTIFICATION" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "REFRESH STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
+sleep 3
 termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000
 termux-toast -g middle -b black -c green Node Running! Check Notification.
 else
