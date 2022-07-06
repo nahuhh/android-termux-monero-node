@@ -595,15 +595,21 @@ BETA=$(termux-dialog radio -t "Which Version would you like to download?" -v "BE
 	fi
 fi
 
+# Start Node
+INIT=$(termux-dialog confirm -i "Start the node in the background?" | jq -r '.text')
+if [ $INIT = yes ]
+then
 cd $TERMUX_SHORTCUTS
 ./.Boot\ XMR\ Node
+else
+echo Not starting now. Use the homescreen widget to start the node.
+fi
 
-echo "I'm Done! 👍.
+cd
+echo "Finished! 👍.
 ..."
 sleep 1
-echo "But.."
-sleep 1
-echo "	
+echo "
 	A couple things for you to do:
 
 Basic:
