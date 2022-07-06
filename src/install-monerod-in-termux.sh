@@ -24,8 +24,8 @@ esac
 # Detect Architecture for BETA
 
 case $(uname -m) in
-	arm | armv7l) MONERO_BETA_URL=https://github.com/nahuhh/monero/releases/download/master-beta/monero-arm-linux-android-7a58bb762.tar.bz2 ;;
-	aarch64_be | aarch64 | armv8b | armv8l) MONERO_BETA_URL=https://github.com/nahuhh/monero/releases/download/master-beta/monero-aarch64-linux-android-7a58bb762.tar.bz2 ;;
+	arm | armv7l) MONERO_BETA_URL=https://github.com/nahuhh/monero/releases/download/master-beta/androidarmv7 ;;
+	aarch64_be | aarch64 | armv8b | armv8l) MONERO_BETA_URL=https://github.com/nahuhh/monero/releases/download/master-beta/androidarmv8 ;;
 	*) termux-toast -g bottom "Your device is not compatible- must be ARMv7 or v8"; exit 1 ;;
 esac
 
