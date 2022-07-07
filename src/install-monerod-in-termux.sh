@@ -450,10 +450,13 @@ EOF
  cat << 'EOF' > xmr_notifications
 #!/data/data/com.termux/files/usr/bin/sh
 sleep 7
+PID=$(pidof monerod)
+if [ $PID -gt 1 ]
+then
 REQ=$(curl -sk https://127.0.0.1:18081/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json')
 LAST=$(date +%r)
-if [ "$REQ" ]
-then
+	if [ "$REQ" ]
+	then
 
 EOF
 
@@ -462,25 +465,28 @@ EOF
 cp xmr_notifications xmr_notifications_released
 
 cat << 'EOF' >> xmr_notifications
-DATA=$(echo $REQ | jq '.result')
-CONNECTED=$(echo "$DATA" | jq '.outgoing_connections_count' )
-NOTIFICATION="🟢 Loading...Please wait 10s($LAST)"
-	if [ $CONNECTED -lt 2 ]
-	then
+	DATA=$(echo $REQ | jq '.result')
+	CONNECTED=$(echo "$DATA" | jq '.outgoing_connections_count' )
+	NOTIFICATION="🟢Waiting for Peers..($LAST)"
+		if [ $CONNECTED -lt 2 ]
+		then
+		termux-notification -i monero -c "$NOTIFICATION" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutting Down" --priority low' --button2 "REFRESH STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
+		termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications
+		sleep 3
+		else
+		termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000
+		termux-toast -g middle -b black -c green Node Running! Check Notification.
+		fi
+	else
+	NOTIFICATION="🟡 Connecting...Please Wait 10s($LAST)"
 	termux-notification -i monero -c "$NOTIFICATION" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "REFRESH STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
 	sleep 3
 	termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications
-	else
-	termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000
-	termux-toast -g middle -b black -c green Node Running! Check Notification.
 	fi
-
 else
-NOTIFICATION="🟡 Connecting...Please wait 30s($LAST)"
-termux-notification -i monero -t "$NOTIFICATION" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low' --button2 "REFRESH STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
-sleep 23
-termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000
+termux-notification -i monero -c "🔴 XMR Node Shutdown" --priority low
 fi
+
 EOF
 
 cat << 'EOF' >> xmr_notifications_released
@@ -497,6 +503,7 @@ DATA=$(echo $REQ | jq '.result')
 	LOCAL_IP=$(echo $(termux-wifi-connectioninfo | jq '.ip'):18089 | tr -d '"')
 
 	NOTIFICATION=$(printf '%s\n' "⛓️ XMR-$VERSION" "🕐️ Running Since: $DATE" "🔄 Sync Progress: $SYNC_STATUS %" "📤️ OUT: $OUTGOING_CONNECTIONS / 🌱 P2P: $P2P_CONNECTIONS / 📲 RPC: $RPC_CONNECTIONS" "💾 Free Space: $STORAGE_REMAINING GB" "🔌 Local IP: $LOCAL_IP" "🧅 Onion: Port 18089 - Tap to Copy Address" "$UPDATE_AVAILABLE" )
+fi
 
 else
 	STATUS="🔴 ERROR: Is your node running? ($LAST)"
