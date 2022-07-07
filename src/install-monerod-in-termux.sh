@@ -471,8 +471,8 @@ cat << 'EOF' >> xmr_notifications
 		if [ $CONNECTED -lt 2 ]
 		then
 		termux-notification -i monero -c "$NOTIFICATION" --ongoing --priority max --alert-once --button1 "SHUTDOWN NODE" --button1-action 'monero-cli/monero-cli/monerod exit | pkill tor | termux-wake-unlock | termux-job-scheduler --cancel --job-id 1 | termux-job-scheduler --cancel --job-id 2 | termux-toast -g middle "Stopped XMR Node" | rm .termux/boot/Boot\ XMR\ Node | termux-notification -i monero -c "🔴 XMR Node Shutting Down" --priority low' --button2 "REFRESH STATUS" --button2-action 'bash -l -c termux-scheduled/xmr_notifications'
-		termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications
 		sleep 3
+		termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications
 		else
 		termux-job-scheduler --job-id 1 -s ~/termux-scheduled/xmr_notifications_acquired --period-ms 900000
 		termux-toast -g middle -b black -c green Node Running! Check Notification.
