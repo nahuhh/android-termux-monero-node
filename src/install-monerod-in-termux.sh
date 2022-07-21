@@ -200,17 +200,10 @@ HiddenServiceDir $TOR_HS
 HiddenServicePort 18089 127.0.0.1:18089
 ## Monero // P2P // Node Peers
 HiddenServicePort 18084 127.0.0.1:18084
-## P2Pool Ports
 ## P2Pool // Stratum Server // Mine on onion.
-## first, run TOR / InviZable / Orbot on mining device and
-## set socks in xmrig config to port 9055
-## set url to your.onion:3333
-## see https://xmrig.com/docs/miner/tor for more info.
 HiddenServicePort 3333 127.0.0.1:3333
-## P2Pool/mini P2P // Unknown if useful
-#HiddenServicePort 37888 127.0.0.1:37888
-## P2Pool P2P // Unknown if useful
-#HiddenServicePort 37889 127.0.0.1:37889
+## see https://xmrig.com/docs/miner/tor for more info.
+
 AvoidDiskWrites 1
 RunAsDaemon 1
 EOF
