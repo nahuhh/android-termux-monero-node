@@ -241,20 +241,9 @@ cd $NODE_CONFIG
 
 # TOR P2P
 	anonymous-inbound=$ONION:18084,127.0.0.1:18084,32
-	proxy=127.0.0.1:9055		# Proxy through TOR
-	tx-proxy=tor,127.0.0.1:9055,16	# relay tx over tor
+	proxy=127.0.0.1:9055				# Proxy through TOR
+	tx-proxy=tor,127.0.0.1:9055,16,disable_noise	# relay tx over tor
 	pad-transactions=1
-
-# TOR Onion Peers. Necessary to send transactions
-	# Trusted by nah.uhh
-	#add-priority-node=qstotuswqshpfq3tk5ue6ngbx6rge3macsfa7qyt5j4caopixxhckpad.onion:18084
-	#add-priority-node=xnmc66dvkqcxr5vo3svqbijqhru24ashrq4ljiz5vr2kpv6c7govhxqd.onion:18084
-	#add-priority-node=idh6t6ez7p44hipb7yrt4a4tpsmb6sug6qvyjgynd5wkf2juljo5styd.onion:18084
-
-# More peers from monerodocs.org. Tested as of 3/19/2022
-	#add-priority-node=4egylyolrzsk6rskorqvocipdo4tqqoyzxnplbjorns7issmgpoxvtyd.onion:18083
-	#add-priority-node=5nvd6jbefgto3u74nzzdkcsbqgxyzrkk7bz5qupsdqg4gbuj5valiaqd.onion:18083
-	#add-priority-node=ozeavjybjbxbvmfcpxzjcn4zklbgohjwwndzenjt44pypvx6jisy74id.onion:18083
 
 # Restricted RPC binds (allow restricted access)
 # Uncomment below for access to the node from LAN/WAN. May require port forwarding for WAN access
