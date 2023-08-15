@@ -1,4 +1,7 @@
 #!bin/bash
+pkg upgrade -y 
+apt install nano wget termux-api jq -y
+
 CHOOSE=$(termux-dialog radio -t "Choose which version" -v "Tor,Clearnet" | jq -r ".text")
 if [ $CHOOSE = "Tor" ]
 then
